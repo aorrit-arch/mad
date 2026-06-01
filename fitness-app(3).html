@@ -1,0 +1,1111 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>Define</title>
+
+<!-- PWA iOS: añadir a pantalla de inicio como app nativa -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Define">
+<meta name="theme-color" content="#0a0a0f">
+<link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxODAgMTgwIj48ZGVmcz48bGluZWFyR3JhZGllbnQgaWQ9ImciIHgxPSIwIiB5MT0iMCIgeDI9IjAiIHkyPSIxIj48c3RvcCBvZmZzZXQ9IjAiIHN0b3AtY29sb3I9IiNmZjVjMzUiLz48c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiNmZjlhMDAiLz48L2xpbmVhckdyYWRpZW50PjwvZGVmcz48cmVjdCB3aWR0aD0iMTgwIiBoZWlnaHQ9IjE4MCIgcng9IjQwIiBmaWxsPSIjMGEwYTBmIi8+PHRleHQgeD0iOTAiIHk9IjEyMCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXdlaWdodD0iOTAwIiBmb250LXNpemU9IjcwIiBmaWxsPSJ1cmwoI2cpIj5EPC90ZXh0Pjwvc3ZnPg==">
+
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --card: #13131a;
+    --card2: #1c1c28;
+    --accent: #ff5c35;
+    --accent2: #ff9a00;
+    --text: #f0f0f0;
+    --muted: #888;
+    --green: #2ecc71;
+    --purple: #5b3fff;
+    --radius: 18px;
+    --sat: env(safe-area-inset-top);
+    --sab: env(safe-area-inset-bottom);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { height: 100%; background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; overflow-x: hidden; }
+
+  #splash {
+    position: fixed; inset: 0; background: var(--bg);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    z-index: 100; transition: opacity 0.5s;
+    padding-top: var(--sat); padding-bottom: var(--sab);
+  }
+  #splash h1 { font-family: 'Bebas Neue', sans-serif; font-size: 3rem; letter-spacing: 4px; background: linear-gradient(135deg, var(--accent), var(--accent2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  #splash p { color: var(--muted); margin-top: 8px; font-size: 0.9rem; }
+  .pulse-ring { width: 80px; height: 80px; border-radius: 50%; border: 3px solid var(--accent); margin-bottom: 24px; animation: pulseRing 1.5s ease-out infinite; }
+  @keyframes pulseRing { 0%{transform:scale(0.8);opacity:1} 100%{transform:scale(1.4);opacity:0} }
+
+  #app { max-width: 430px; margin: 0 auto; padding: var(--sat) 0 calc(100px + var(--sab)); }
+
+  .header { padding: 20px 20px 10px; display: flex; justify-content: space-between; align-items: center; }
+  .header-title { font-family: 'Bebas Neue', sans-serif; font-size: 1.6rem; letter-spacing: 3px; background: linear-gradient(135deg, var(--accent), var(--accent2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  .header-right { display: flex; gap: 8px; align-items: center; }
+  .streak { background: var(--card2); border-radius: 20px; padding: 6px 14px; font-size: 0.8rem; display: flex; align-items: center; gap: 5px; }
+  .week-pill { background: var(--card2); border-radius: 20px; padding: 6px 12px; font-size: 0.72rem; color: var(--accent2); font-weight: 700; letter-spacing: 1px; }
+
+  .days-nav { display: flex; gap: 8px; padding: 10px 20px; overflow-x: auto; scrollbar-width: none; }
+  .days-nav::-webkit-scrollbar { display: none; }
+  .day-pill { flex-shrink: 0; padding: 8px 16px; border-radius: 30px; background: var(--card); font-size: 0.8rem; font-weight: 500; cursor: pointer; border: 2px solid transparent; transition: all 0.25s; white-space: nowrap; }
+  .day-pill.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .day-pill.done { border-color: var(--green); color: var(--green); }
+
+  .day-view { padding: 0 20px; animation: fadeUp 0.35s ease; }
+  @keyframes fadeUp { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
+
+  .day-header { margin-bottom: 16px; }
+  .day-label { font-family: 'Bebas Neue', sans-serif; font-size: 2rem; letter-spacing: 2px; }
+  .day-sub { color: var(--muted); font-size: 0.85rem; margin-top: 2px; }
+  .block-badge { display: inline-block; background: var(--accent); color: #fff; font-size: 0.7rem; font-weight: 700; padding: 3px 10px; border-radius: 20px; margin-top: 6px; letter-spacing: 1px; }
+  .block-badge.b { background: var(--purple); }
+  .block-badge.c { background: #00b894; }
+  .block-badge.rest { background: var(--muted); }
+
+  .section-title { font-family: 'Bebas Neue', sans-serif; font-size: 1rem; letter-spacing: 3px; color: var(--muted); margin: 18px 0 10px; }
+
+  /* Sun Salutation card */
+  .sun-card {
+    background: linear-gradient(135deg, #1c1c28, #13131a);
+    border-radius: var(--radius); margin-bottom: 14px;
+    overflow: hidden; cursor: pointer;
+    border: 2px solid transparent; transition: border-color 0.2s;
+    position: relative;
+  }
+  .sun-card.active-ex { border-color: var(--accent2); }
+  .sun-card.completed-ex { border-color: var(--green); opacity: 0.85; }
+  .sun-top { display: flex; align-items: center; gap: 12px; padding: 14px; }
+  .sun-icon {
+    width: 64px; height: 64px; border-radius: 50%; flex-shrink: 0;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    display: flex; align-items: center; justify-content: center; font-size: 2rem;
+    box-shadow: 0 0 20px rgba(255,154,0,0.3);
+  }
+  .sun-poses { padding: 0 14px 16px; }
+  .pose-item {
+    display: flex; align-items: center; gap: 10px; padding: 8px 0;
+    border-bottom: 1px solid #ffffff08; font-size: 0.82rem;
+  }
+  .pose-item:last-child { border-bottom: none; }
+  .pose-svg { width: 44px; height: 52px; flex-shrink: 0; background: #ffffff05; border-radius: 8px; padding: 2px; display: flex; align-items: center; justify-content: center; }
+  .pose-svg svg { width: 100%; height: 100%; }
+  .pose-txt { flex: 1; line-height: 1.4; }
+  .pose-num {
+    width: 24px; height: 24px; border-radius: 50%; background: var(--card2);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.7rem; font-weight: 700; color: var(--accent2); flex-shrink: 0;
+  }
+
+  .ex-card {
+    background: var(--card); border-radius: var(--radius); margin-bottom: 12px;
+    overflow: hidden; cursor: pointer; border: 2px solid transparent; transition: border-color 0.2s;
+  }
+  .ex-card.active-ex { border-color: var(--accent); }
+  .ex-card.completed-ex { border-color: var(--green); opacity: 0.75; }
+
+  .ex-top { display: flex; align-items: center; gap: 12px; padding: 14px; }
+  .ex-icon-wrap { width: 70px; height: 60px; border-radius: 12px; overflow: hidden; flex-shrink: 0; background: #ffffff08; display: flex; align-items: center; justify-content: center; padding: 4px; }
+  .ex-icon-wrap svg { width: 100%; height: 100%; }
+  .ex-info { flex: 1; min-width: 0; }
+  .ex-name { font-weight: 700; font-size: 0.95rem; }
+  .ex-meta { color: var(--muted); font-size: 0.78rem; margin-top: 3px; line-height: 1.4; }
+  .ex-sets { font-size: 0.8rem; color: var(--accent2); font-weight: 600; margin-top: 4px; }
+  .ex-check { width: 28px; height: 28px; border-radius: 50%; border: 2px solid var(--muted); display: flex; align-items: center; justify-content: center; font-size: 1rem; flex-shrink: 0; transition: all 0.2s; }
+  .ex-check.done { background: var(--green); border-color: var(--green); }
+
+  .ex-image-big { width: 100%; height: 170px; background: #ffffff05; display: flex; align-items: center; justify-content: center; padding: 20px; border-top: 1px solid #ffffff0a; }
+  .ex-image-big svg { width: 100%; height: 100%; max-width: 320px; }
+  .ex-image-caption { background: #000000aa; padding: 8px 14px; font-size: 0.75rem; color: var(--muted); border-bottom: 1px solid #ffffff08; }
+
+  .timer-panel { background: var(--card2); padding: 16px 14px; }
+  .timer-state { text-align: center; font-size: 0.72rem; letter-spacing: 2px; color: var(--accent2); font-weight: 700; margin-bottom: 8px; }
+  .timer-state.rest { color: var(--purple); }
+  .timer-ring-wrap { display: flex; justify-content: center; margin-bottom: 14px; position: relative; width: 110px; height: 110px; margin: 0 auto 14px; }
+  .timer-svg { transform: rotate(-90deg); }
+  .timer-track { fill: none; stroke: #ffffff0f; stroke-width: 6; }
+  .timer-bar { fill: none; stroke: var(--accent); stroke-width: 6; stroke-linecap: round; transition: stroke-dashoffset 0.1s linear; }
+  .timer-bar.rest-color { stroke: var(--purple); }
+  .timer-center { position: absolute; display: flex; flex-direction: column; align-items: center; justify-content: center; width: 110px; height: 110px; top: 0; left: 0; }
+  .timer-num { font-family: 'Bebas Neue', sans-serif; font-size: 2.6rem; letter-spacing: 2px; line-height: 1; }
+  .timer-lbl { font-size: 0.65rem; color: var(--muted); letter-spacing: 2px; }
+
+  .timer-btns { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+  .t-btn { flex: 1; min-width: 100px; max-width: 160px; padding: 12px; border-radius: 12px; border: none; font-family: 'DM Sans', sans-serif; font-weight: 700; font-size: 0.9rem; cursor: pointer; transition: all 0.2s; }
+  .t-btn.start { background: var(--accent); color: #fff; }
+  .t-btn.reset { background: var(--card); color: var(--text); border: 1px solid #ffffff15; }
+  .t-btn.done-btn { background: var(--green); color: #fff; width: 100%; max-width: 100%; padding: 14px; font-size: 0.95rem; }
+  .t-btn.skip-btn { background: transparent; color: var(--muted); border: 1px solid #ffffff15; max-width: 100%; }
+
+  .set-tracker { display: flex; gap: 8px; justify-content: center; margin-bottom: 12px; }
+  .set-dot { width: 30px; height: 30px; border-radius: 8px; background: var(--card); border: 2px solid #ffffff15; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 700; transition: all 0.2s; }
+  .set-dot.done { background: var(--green); border-color: var(--green); color: #fff; }
+  .set-dot.active { border-color: var(--accent); color: var(--accent); }
+
+  .rest-screen { background: var(--card); border-radius: var(--radius); padding: 30px 20px; text-align: center; margin-bottom: 12px; }
+  .rest-emoji { font-size: 3rem; margin-bottom: 10px; }
+  .rest-title { font-family: 'Bebas Neue', sans-serif; font-size: 1.8rem; letter-spacing: 2px; color: var(--accent2); }
+  .rest-sub { color: var(--muted); font-size: 0.85rem; margin-top: 4px; line-height: 1.6; }
+
+  .complete-banner {
+    background: linear-gradient(135deg, var(--green), #27ae60);
+    border-radius: var(--radius); padding: 24px 20px; text-align: center; margin: 12px 0;
+    box-shadow: 0 4px 20px rgba(46,204,113,0.2);
+  }
+  .complete-banner h2 { font-family: 'Bebas Neue', sans-serif; font-size: 1.8rem; letter-spacing: 3px; }
+  .complete-stats { display: flex; justify-content: space-around; margin-top: 14px; }
+  .complete-stat { text-align: center; }
+  .complete-stat-num { font-family: 'Bebas Neue', sans-serif; font-size: 1.5rem; }
+  .complete-stat-lbl { font-size: 0.7rem; opacity: 0.9; }
+
+  .bottom-nav { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 430px; background: rgba(13,13,20,0.95); backdrop-filter: blur(12px); border-top: 1px solid #ffffff10; display: flex; padding: 12px 0 calc(20px + var(--sab)); z-index: 50; }
+  .nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; color: var(--muted); transition: color 0.2s; font-size: 0.65rem; }
+  .nav-item.active { color: var(--accent); }
+  .nav-icon { font-size: 1.4rem; }
+
+  .prog-section { padding: 20px; }
+  .prog-title { font-family: 'Bebas Neue', sans-serif; font-size: 1.8rem; letter-spacing: 2px; margin-bottom: 16px; }
+  .week-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; margin-bottom: 24px; }
+  .week-cell { aspect-ratio: 1; border-radius: 8px; background: var(--card); display: flex; align-items: center; justify-content: center; font-size: 0.65rem; color: var(--muted); flex-direction: column; gap: 2px; }
+  .week-cell.done { background: var(--green); color: #fff; }
+  .week-cell.today { border: 2px solid var(--accent); color: var(--accent); }
+  .week-cell .wday { font-weight: 700; }
+  .stat-row { display: flex; gap: 10px; margin-bottom: 10px; }
+  .stat-box { flex: 1; background: var(--card); border-radius: 14px; padding: 16px; text-align: center; }
+  .stat-num { font-family: 'Bebas Neue', sans-serif; font-size: 2rem; background: linear-gradient(135deg, var(--accent), var(--accent2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  .stat-lbl { font-size: 0.72rem; color: var(--muted); margin-top: 2px; }
+
+  .tip-section { padding: 20px; }
+  .tip-card { background: var(--card); border-radius: var(--radius); padding: 18px; margin-bottom: 12px; border-left: 4px solid var(--accent); }
+  .tip-card.green { border-left-color: var(--green); }
+  .tip-card.blue { border-left-color: var(--purple); }
+  .tip-title { font-weight: 700; margin-bottom: 6px; font-size: 0.95rem; }
+  .tip-text { color: var(--muted); font-size: 0.83rem; line-height: 1.5; }
+
+  .install-tip {
+    background: linear-gradient(135deg, var(--card), var(--card2));
+    border-radius: var(--radius); padding: 18px; margin: 0 20px 16px;
+    border: 1px solid var(--accent2); position: relative;
+  }
+  .install-tip-close {
+    position: absolute; top: 10px; right: 12px; background: none; border: none;
+    color: var(--muted); font-size: 1.2rem; cursor: pointer;
+  }
+  .install-tip-title { font-weight: 700; margin-bottom: 8px; color: var(--accent2); font-size: 0.9rem; }
+  .install-tip-text { font-size: 0.82rem; color: var(--muted); line-height: 1.5; }
+  .install-tip-text b { color: var(--text); }
+
+  .settings-section { padding: 20px; }
+  .setting-row {
+    background: var(--card); border-radius: 14px; padding: 14px 16px; margin-bottom: 10px;
+    display: flex; justify-content: space-between; align-items: center; gap: 12px;
+  }
+  .setting-info { flex: 1; min-width: 0; }
+  .setting-title { font-weight: 700; font-size: 0.9rem; margin-bottom: 2px; }
+  .setting-desc { font-size: 0.75rem; color: var(--muted); line-height: 1.4; }
+  .setting-btn {
+    background: var(--card2); color: var(--text); border: 1px solid #ffffff15;
+    padding: 8px 14px; border-radius: 10px; font-size: 0.8rem; font-weight: 700;
+    cursor: pointer; white-space: nowrap;
+  }
+  .setting-btn.danger { color: #ff5c35; border-color: #ff5c3540; }
+
+  .hidden { display: none !important; }
+</style>
+</head>
+<body>
+
+<div id="splash">
+  <div class="pulse-ring"></div>
+  <h1>DEFINE TU CUERPO</h1>
+  <p>Programa 4 semanas · Sin material</p>
+</div>
+
+<div id="app">
+  <!-- TRAIN PAGE -->
+  <div id="page-train">
+    <div class="header">
+      <div class="header-title">HOY ENTRENAS</div>
+      <div class="header-right">
+        <div class="week-pill">SEM <span id="week-num">1</span>/4</div>
+        <div class="streak">🔥 <span id="streak-num">0</span></div>
+      </div>
+    </div>
+
+    <div id="install-tip-wrap"></div>
+
+    <div class="days-nav" id="days-nav"></div>
+    <div class="day-view" id="day-view"></div>
+  </div>
+
+  <!-- PROGRESS PAGE -->
+  <div id="page-prog" class="hidden">
+    <div class="prog-section">
+      <div class="prog-title">TU PROGRESO</div>
+      <div class="stat-row">
+        <div class="stat-box"><div class="stat-num" id="stat-done">0</div><div class="stat-lbl">Días completados</div></div>
+        <div class="stat-box"><div class="stat-num" id="stat-min">0</div><div class="stat-lbl">Minutos totales</div></div>
+      </div>
+      <div class="stat-row">
+        <div class="stat-box"><div class="stat-num" id="stat-ex">0</div><div class="stat-lbl">Ejercicios hechos</div></div>
+        <div class="stat-box"><div class="stat-num" id="stat-week">1</div><div class="stat-lbl">Semana actual</div></div>
+      </div>
+      <div class="week-grid" id="week-grid"></div>
+    </div>
+  </div>
+
+  <!-- TIPS PAGE -->
+  <div id="page-tips" class="hidden">
+    <div class="tip-section">
+      <div class="prog-title">CONSEJOS</div>
+      <div class="tip-card">
+        <div class="tip-title">⏰ Cuándo entrenar</div>
+        <div class="tip-text">Haz la rutina en ayunas por la mañana. Después camina 30 min por la montaña. Así quemas grasa de verdad porque el cuerpo tira directo de las reservas.</div>
+      </div>
+      <div class="tip-card green">
+        <div class="tip-title">🥗 Alimentación clave</div>
+        <div class="tip-text">Cena ligero, sin carbohidratos refinados. Cero zumos ni refrescos. Vaso de agua antes de cada comida. Esto hace el 70% del trabajo.</div>
+      </div>
+      <div class="tip-card blue">
+        <div class="tip-title">🧘 Saludo al Sol</div>
+        <div class="tip-text">Hazlo despacio, respirando profundo. 2 rondas (una con cada pierna en la zancada). No hay prisa: es para despertar el cuerpo y ganar movilidad.</div>
+      </div>
+      <div class="tip-card">
+        <div class="tip-title">🪨 Las piedras</div>
+        <div class="tip-text">Necesitas dos: una de 3-5 kg (hombros, bíceps) y una de 8-12 kg (remo, sentadilla si quieres añadir). Si solo tienes una, prueba con 6-8 kg y haces más reps.</div>
+      </div>
+      <div class="tip-card green">
+        <div class="tip-title">📈 Progresión automática</div>
+        <div class="tip-text">La app sabe en qué semana estás. Semana 1 reps base. Semana 2 +1 rep. Semana 3 +2 reps. Semana 4 +3 reps. No tienes que pensar nada.</div>
+      </div>
+      <div class="tip-card blue">
+        <div class="tip-title">🦵 Piernas y glúteos</div>
+        <div class="tip-text">Las cubres con caminar por la montaña (cuestas) y nadar. Estos dos juntos son completísimos para tren inferior. No necesitas más.</div>
+      </div>
+      <div class="tip-card">
+        <div class="tip-title">💪 La regla del 2 segundos</div>
+        <div class="tip-text">En cada ejercicio, baja LENTO (cuenta 2 segundos). La fase de bajada es la que más marca. Si vas rápido pierdes el 50% del efecto.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SETTINGS PAGE -->
+  <div id="page-settings" class="hidden">
+    <div class="settings-section">
+      <div class="prog-title">AJUSTES</div>
+
+      <div class="setting-row">
+        <div class="setting-info">
+          <div class="setting-title">Semana del programa</div>
+          <div class="setting-desc">Cambia manualmente si te desfasas. Auto: detecta solo.</div>
+        </div>
+        <button class="setting-btn" onclick="cycleWeek()">SEM <span id="set-week">1</span></button>
+      </div>
+
+      <div class="setting-row">
+        <div class="setting-info">
+          <div class="setting-title">Pantalla siempre encendida</div>
+          <div class="setting-desc">Evita que se apague durante el entreno.</div>
+        </div>
+        <button class="setting-btn" id="wake-btn" onclick="toggleWakeLock()">ON</button>
+      </div>
+
+      <div class="setting-row">
+        <div class="setting-info">
+          <div class="setting-title">Sonido al acabar timer</div>
+          <div class="setting-desc">Beep suave. NO corta tu música.</div>
+        </div>
+        <button class="setting-btn" id="sound-btn" onclick="toggleSound()">ON</button>
+      </div>
+
+      <div class="setting-row">
+        <div class="setting-info">
+          <div class="setting-title">Reiniciar día actual</div>
+          <div class="setting-desc">Borra series marcadas hoy.</div>
+        </div>
+        <button class="setting-btn" onclick="resetDay()">RESET</button>
+      </div>
+
+      <div class="setting-row">
+        <div class="setting-info">
+          <div class="setting-title">Reiniciar todo el progreso</div>
+          <div class="setting-desc">Borra racha, días completados, todo.</div>
+        </div>
+        <button class="setting-btn danger" onclick="resetAll()">BORRAR</button>
+      </div>
+
+      <div style="margin-top:24px;text-align:center;color:var(--muted);font-size:0.75rem;line-height:1.6">
+        Define v2.0 · Programa para 44+<br>
+        Tu salud va primero. Si algo duele, para.
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="bottom-nav">
+  <div class="nav-item active" id="nav-train" onclick="showPage('train')"><div class="nav-icon">🏋️</div>Entrenar</div>
+  <div class="nav-item" id="nav-prog" onclick="showPage('prog')"><div class="nav-icon">📊</div>Progreso</div>
+  <div class="nav-item" id="nav-tips" onclick="showPage('tips')"><div class="nav-icon">💡</div>Consejos</div>
+  <div class="nav-item" id="nav-settings" onclick="showPage('settings')"><div class="nav-icon">⚙️</div>Ajustes</div>
+</div>
+
+<script>
+// ============================================================
+// EXERCISE DATABASE
+// ============================================================
+// SVG illustration helpers — figures use orange #ff7c1f, stones #999, floor #555
+const EXERCISES = {
+  "Flexiones Inclinadas": {
+    svg: `<svg viewBox='0 0 200 140' xmlns='http://www.w3.org/2000/svg'> <!-- floor --> <line x1='6' y1='128' x2='194' y2='128' stroke='#444' stroke-width='1.2'/> <!-- chair shadow --> <ellipse cx='162' cy='128' rx='30' ry='2.5' fill='#000' opacity='0.4'/> <!-- chair (back-leaning bench with depth) --> <rect x='132' y='86' width='44' height='42' fill='#1c1c28' stroke='#888' stroke-width='1.5'/> <rect x='132' y='86' width='44' height='5' fill='#aaa'/> <line x1='176' y1='86' x2='182' y2='80' stroke='#666' stroke-width='1.3'/> <line x1='176' y1='128' x2='182' y2='122' stroke='#666' stroke-width='1.3'/> <line x1='182' y1='80' x2='182' y2='122' stroke='#666' stroke-width='1.3'/> <!-- body shadow on floor --> <ellipse cx='90' cy='129' rx='65' ry='2' fill='#000' opacity='0.35'/> <!-- back leg --> <path d='M 30 126 L 70 108 L 78 95' fill='none' stroke='#ff7c1f' stroke-width='9' stroke-linecap='round'/> <!-- shoe --> <ellipse cx='26' cy='127' rx='8' ry='3' fill='#2a2a2a'/> <!-- glute/hip joint --> <circle cx='78' cy='95' r='6' fill='#ff7c1f' stroke='#c75a18' stroke-width='0.5'/> <!-- torso (curved, going up-right toward chair) --> <path d='M 75 100 Q 110 78 142 70 L 145 80 Q 112 90 80 108 Z' fill='#ff7c1f' stroke='#c75a18' stroke-width='0.7'/> <!-- chest highlight --> <ellipse cx='120' cy='80' rx='14' ry='5' fill='#ffd966' opacity='0.35'/> <!-- supporting arm (front, on chair) --> <path d='M 145 74 L 148 86' fill='none' stroke='#ff7c1f' stroke-width='8' stroke-linecap='round'/> <!-- hand on seat --> <ellipse cx='148' cy='88' rx='5' ry='2.5' fill='#ff9a3a'/> <!-- second arm (back, slightly offset) --> <path d='M 138 76 L 142 86' fill='none' stroke='#c75a18' stroke-width='7' stroke-linecap='round' opacity='0.85'/> <!-- neck + head --> <line x1='145' y1='68' x2='152' y2='58' stroke='#ff7c1f' stroke-width='6' stroke-linecap='round'/> <circle cx='156' cy='53' r='10' fill='#ff9a3a' stroke='#c75a18' stroke-width='0.5'/> <!-- face hint --> <circle cx='162' cy='52' r='1.5' fill='#1c1c28'/> <path d='M 159 56 Q 162 58 165 55' fill='none' stroke='#1c1c28' stroke-width='0.6'/> <!-- motion arrow (up/down) --> <g opacity='0.85'> <path d='M 102 50 L 102 32 M 98 36 L 102 32 L 106 36 M 98 46 L 102 50 L 106 46' stroke='#ff9a00' stroke-width='2.2' fill='none' stroke-linecap='round'/> <text x='110' y='44' fill='#ff9a00' font-family='system-ui' font-size='10' font-weight='700'>2s</text> </g> </svg>`,
+    caption: "Manos en silla o banco. Cuerpo diagonal. Baja 2 segundos. Codos a 45°."
+  },
+  "Flexiones Rodillas": {
+    svg: `<svg viewBox='0 0 200 140' xmlns='http://www.w3.org/2000/svg'> <line x1='6' y1='128' x2='194' y2='128' stroke='#444' stroke-width='1.2'/> <ellipse cx='100' cy='130' rx='85' ry='2.2' fill='#000' opacity='0.4'/> <!-- feet/lower legs lifted, crossed --> <path d='M 26 122 Q 46 116 60 110' fill='none' stroke='#ff7c1f' stroke-width='8' stroke-linecap='round'/> <ellipse cx='22' cy='125' rx='7' ry='3' fill='#2a2a2a'/> <!-- knee (on floor) --> <circle cx='66' cy='118' r='8' fill='#ff7c1f' stroke='#c75a18' stroke-width='0.6'/> <!-- thigh going up toward hip --> <path d='M 70 116 L 92 96' fill='none' stroke='#ff7c1f' stroke-width='10' stroke-linecap='round'/> <!-- hip --> <circle cx='94' cy='94' r='7' fill='#ff7c1f' stroke='#c75a18' stroke-width='0.6'/> <!-- torso (going up-right diagonally) --> <path d='M 90 100 Q 120 82 152 72 L 155 82 Q 122 92 92 112 Z' fill='#ff7c1f' stroke='#c75a18' stroke-width='0.7'/> <ellipse cx='128' cy='84' rx='14' ry='5' fill='#ffd966' opacity='0.35'/> <!-- supporting arms --> <path d='M 152 76 L 156 110' fill='none' stroke='#ff7c1f' stroke-width='8' stroke-linecap='round'/> <path d='M 144 78 L 150 110' fill='none' stroke='#c75a18' stroke-width='7' stroke-linecap='round' opacity='0.85'/> <!-- hands on floor --> <ellipse cx='156' cy='124' rx='6' ry='2.5' fill='#ff9a3a'/> <ellipse cx='150' cy='124' rx='5' ry='2' fill='#c75a18' opacity='0.8'/> <!-- neck + head --> <line x1='154' y1='70' x2='160' y2='60' stroke='#ff7c1f' stroke-width='6' stroke-linecap='round'/> <circle cx='164' cy='55' r='10' fill='#ff9a3a' stroke='#c75a18' stroke-width='0.5'/> <circle cx='170' cy='54' r='1.5' fill='#1c1c28'/> <path d='M 167 58 Q 170 60 173 57' fill='none' stroke='#1c1c28' stroke-width='0.6'/> <!-- motion arrow --> <g opacity='0.85'> <path d='M 110 52 L 110 32 M 106 36 L 110 32 L 114 36 M 106 48 L 110 52 L 114 48' stroke='#ff9a00' stroke-width='2.2' fill='none' stroke-linecap='round'/> </g> </svg>`,
+    caption: "Rodillas apoyadas. Manos al ancho de hombros. Core tenso. Baja lento."
+  },
+  "Pike Push-Up": {
+    svg: `<svg viewBox='0 0 200 140' xmlns='http://www.w3.org/2000/svg'> <line x1='6' y1='128' x2='194' y2='128' stroke='#444' stroke-width='1.2'/> <ellipse cx='100' cy='130' rx='80' ry='2.2' fill='#000' opacity='0.4'/> <!-- left leg (long, going down to floor) --> <path d='M 100 30 Q 70 80 40 124' fill='none' stroke='#ff7c1f' stroke-width='10' stroke-linecap='round'/> <ellipse cx='36' cy='126' rx='8' ry='3' fill='#2a2a2a'/> <!-- right arm (going down to floor) --> <path d='M 100 30 Q 130 80 160 124' fill='none' stroke='#ff7c1f' stroke-width='9' stroke-linecap='round'/> <ellipse cx='160' cy='126' rx='6' ry='2.5' fill='#ff9a3a'/> <!-- pelvis peak --> <ellipse cx='100' cy='28' rx='14' ry='8' fill='#ff7c1f' stroke='#c75a18' stroke-width='0.7'/> <!-- glute highlight --> <ellipse cx='100' cy='25' rx='8' ry='4' fill='#ffd966' opacity='0.35'/> <!-- torso going down inverted (head at bottom of V-top side) --> <path d='M 96 36 L 78 80 L 88 84 L 104 38 Z' fill='#ff7c1f' stroke='#c75a18' stroke-width='0.5'/> <!-- shoulder highlight --> <ellipse cx='84' cy='62' rx='5' ry='10' fill='#ffd966' opacity='0.35'/> <!-- head (down between arms - upside down) --> <circle cx='78' cy='84' r='9' fill='#ff9a3a' stroke='#c75a18' stroke-width='0.5'/> <circle cx='74' cy='82' r='1.5' fill='#1c1c28'/> <!-- guide line showing inverted V --> <path d='M 40 124 L 100 30 L 160 124' fill='none' stroke='#2ecc71' stroke-width='0.8' stroke-dasharray='3 3' opacity='0.4'/> <!-- annotation --> <text x='105' y='20' fill='#2ecc71' font-family='system-ui' font-size='9' font-weight='700'>V invertida</text> </svg>`,
+    caption: "Cuerpo en V invertida. Baja la cabeza entre los brazos. Trabaja hombros."
+  },
+  "Press Hombro con Piedra": {
+    svg: `<svg viewBox='0 0 200 140' xmlns='http://www.w3.org/2000/svg'> <line x1='6' y1='128' x2='194' y2='128' stroke='#444' stroke-width='1.2'/> <ellipse cx='100' cy='130' rx='22' ry='3' fill='#000' opacity='0.45'/> <!-- legs --> <path d='M 92 128 L 92 90' fill='none' stroke='#ff7c1f' stroke-width='10' stroke-linecap='round'/> <path d='M 108 128 L 108 90' fill='none' stroke='#ff7c1f' stroke-width='10' stroke-linecap='round'/> <!-- shoes --> <ellipse cx='92' cy='128' rx='8' ry='3' fill='#2a2a2a'/> <ellipse cx='108' cy='128' rx='8' ry='3' fill='#2a2a2a'/> <!-- pelvis --> <rect x='85' y='80' width='30' height='14' rx='6' fill='#ff7c1f' stroke='#c75a18' stroke-width='0.5'/> <!-- torso (tall, slightly tapered) --> <path d='M 84 78 L 116 78 L 113 50 L 87 50 Z' fill='#ff7c1f' stroke='#c75a18' stroke-width='0.6'/> <!-- abs highlight --> <ellipse cx='100' cy='66' rx='10' ry='12' fill='#ffd966' opacity='0.3'/> <!-- shoulders --> <circle cx='86' cy='50' r='7' fill='#ff7c1f' stroke='#c75a18' stroke-width='0.5'/> <circle cx='114' cy='50' r='7' fill='#ff7c1f' stroke='#c75a18' stroke-width='0.5'/> <!-- arms up holding stone --> <path d='M 86 48 Q 78 30 78 18' fill='none' stroke='#ff7c1f' stroke-width='8' stroke-linecap='round'/> <path d='M 114 48 Q 122 30 122 18' fill='none' stroke='#ff7c1f' stroke-width='8' stroke-linecap='round'/> <!-- stone overhead --> <ellipse cx='100' cy='14' rx='22' ry='10' fill='#777' stroke='#444' stroke-width='1'/> <ellipse cx='95' cy='11' rx='10' ry='3' fill='#aaa' opacity='0.6'/> <path d='M 80 14 Q 88 8 100 9 Q 112 8 120 14' fill='none' stroke='#555' stroke-width='0.5'/> <!-- hands gripping stone --> <ellipse cx='80' cy='18' rx='4' ry='3' fill='#ff9a3a'/> <ellipse cx='120' cy='18' rx='4' ry='3' fill='#ff9a3a'/> <!-- head --> <circle cx='100' cy='38' r='10' fill='#ff9a3a' stroke='#c75a18' stroke-width='0.5'/> <circle cx='100' cy='38' r='1.5' fill='#1c1c28'/> <circle cx='105' cy='37' r='1' fill='#1c1c28'/> <!-- motion arrow --> <g opacity='0.85'> <path d='M 150 60 L 150 26 M 146 30 L 150 26 L 154 30' stroke='#ff9a00' stroke-width='2.2' fill='none' stroke-linecap='round'/> <text x='156' y='44' fill='#ff9a00' font-family='system-ui' font-size='10' font-weight='700'>↑</text> </g> </svg>`,
+    caption: "Piedra a la altura del pecho con ambas manos. Sube por encima de la cabeza. Brazos firmes, abdomen apretado."
+  },
+  "Fondos Tríceps Silla": {
+    svg: `<svg viewBox='0 0 200 140' xmlns='http://www.w3.org/2000/svg'> <line x1='6' y1='128' x2='194' y2='128' stroke='#444' stroke-width='1.2'/> <ellipse cx='148' cy='130' rx='32' ry='2.5' fill='#000' opacity='0.4'/> <!-- chair with depth --> <rect x='120' y='66' width='52' height='62' fill='#1c1c28' stroke='#888' stroke-width='1.5'/> <rect x='120' y='66' width='52' height='6' fill='#aaa'/> <rect x='168' y='28' width='6' height='100' fill='#1c1c28' stroke='#888' stroke-width='1'/> <line x1='172' y1='66' x2='178' y2='60' stroke='#666' stroke-width='1.3'/> <line x1='172' y1='128' x2='178' y2='122' stroke='#666' stroke-width='1.3'/> <line x1='178' y1='60' x2='178' y2='122' stroke='#666' stroke-width='1.3'/> <!-- feet/legs out front, knees bent --> <path d='M 30 128 L 52 110 Q 70 100 88 96' fill='none' stroke='#ff7c1f' stroke-width='10' stroke-linecap='round'/> <ellipse cx='26' cy='128' rx='8' ry='3' fill='#2a2a2a'/> <!-- hip dropping below seat --> <circle cx='98' cy='98' r='8' fill='#ff7c1f' stroke='#c75a18' stroke-width='0.6'/> <!-- torso (more vertical) --> <path d='M 92 96 L 110 96 L 108 60 L 94 60 Z' fill='#ff7c1f' stroke='#c75a18' stroke-width='0.6'/> <ellipse cx='101' cy='78' rx='7' ry='12' fill='#ffd966' opacity='0.3'/> <!-- arm going back to chair edge --> <path d='M 108 60 Q 124 64 130 72' fill='none' stroke='#ff7c1f' stroke-width='8' stroke-linecap='round'/> <!-- hand on chair seat edge --> <ellipse cx='130' cy='72' rx='5' ry='2.5' fill='#ff9a3a'/> <!-- elbow joint (bent back behind) --> <circle cx='124' cy='66' r='4' fill='#c75a18' opacity='0.7'/> <!-- shoulder --> <circle cx='102' cy='58' r='6' fill='#ff7c1f' stroke='#c75a18' stroke-width='0.5'/> <!-- neck + head --> <line x1='102' y1='54' x2='102' y2='44' stroke='#ff7c1f' stroke-width='6' stroke-linecap='round'/> <circle cx='102' cy='36' r='10' fill='#ff9a3a' stroke='#c75a18' stroke-width='0.5'/> <circle cx='98' cy='35' r='1.5' fill='#1c1c28'/> <path d='M 95 40 Q 98 42 101 39' fill='none' stroke='#1c1c28' stroke-width='0.6'/> <!-- motion arrow --> <g opacity='0.85'> <path d='M 60 48 L 60 78 M 56 74 L 60 78 L 64 74 M 56 52 L 60 48 L 64 52' stroke='#ff9a00' stroke-width='2.2' fill='none' stroke-linecap='round'/> <text x='40' y='40' fill='#ff9a00' font-family='system-ui' font-size='10' font-weight='700'>baja</text> </g> </svg>`,
+    caption: "Sentado en el borde de una silla. Manos a los lados. Baja doblando codos hacia atrás. Sube empujando."
+  },
+  "Plancha Frontal": {
+    svg: `<svg viewBox='0 0 200 140' xmlns='http://www.w3.org/2000/svg'> <line x1='6' y1='128' x2='194' y2='128' stroke='#444' stroke-width='1.2'/> <ellipse cx='100' cy='130' rx='85' ry='2.5' fill='#000' opacity='0.45'/> <!-- guide line for straight body --> <line x1='28' y1='65' x2='168' y2='65' stroke='#2ecc71' stroke-width='0.8' stroke-dasharray='3 3' opacity='0.5'/> <text x='100' y='58' fill='#2ecc71' font-family='system-ui' font-size='9' font-weight='700' text-anchor='middle'>cos recto como tabla</text> <!-- legs --> <path d='M 28 118 L 60 88 L 100 82 L 140 84' fill='none' stroke='#ff7c1f' stroke-width='15' stroke-linecap='round'/> <!-- shoes --> <ellipse cx='24' cy='124' rx='8' ry='3.5' fill='#2a2a2a'/> <!-- abs highlight --> <ellipse cx='90' cy='86' rx='30' ry='8' fill='#ffd966' opacity='0.35'/> <!-- arm vertical at front --> <path d='M 140 84 L 140 124' fill='none' stroke='#ff7c1f' stroke-width='8' stroke-linecap='round'/> <!-- elbow joint --> <circle cx='140' cy='112' r='4' fill='#c75a18' opacity='0.8'/> <!-- forearm on ground --> <path d='M 122 128 L 158 128' stroke='#ff7c1f' stroke-width='10' stroke-linecap='round'/> <!-- fist hint --> <ellipse cx='155' cy='128' rx='6' ry='3' fill='#ff9a3a'/> <!-- back arm (slightly behind) --> <path d='M 134 84 L 134 124' fill='none' stroke='#c75a18' stroke-width='6' stroke-linecap='round' opacity='0.75'/> <!-- neck + head looking down --> <line x1='140' y1='80' x2='150' y2='72' stroke='#ff7c1f' stroke-width='5' stroke-linecap='round'/> <circle cx='154' cy='68' r='9' fill='#ff9a3a' stroke='#c75a18' stroke-width='0.5'/> <circle cx='159' cy='70' r='1.5' fill='#1c1c28'/> <!-- timer/hold indicator --> <g opacity='0.9'> <circle cx='170' cy='30' r='12' fill='none' stroke='#ff9a00' stroke-width='1.5'/> <text x='170' y='34' fill='#ff9a00' font-family='system-ui' font-size='10' font-weight='700' text-anchor='middle'>HOLD</text> </g> </svg>`,
+    caption: "Apoyado en antebrazos. Cuerpo recto como tabla. Glúteos apretados. Respira tranquilo."
+  },
+  "Plancha Toque Hombro": {
+    svg: `<svg viewBox='0 0 200 140' xmlns='http://www.w3.org/2000/svg'> <line x1='6' y1='128' x2='194' y2='128' stroke='#444' stroke-width='1.2'/> <ellipse cx='100' cy='130' rx='85' ry='2.5' fill='#000' opacity='0.45'/> <!-- legs (high plank) --> <path d='M 28 122 L 60 80 L 100 76 L 140 78' fill='none' stroke='#ff7c1f' stroke-width='15' stroke-linecap='round'/> <ellipse cx='24' cy='126' rx='8' ry='3' fill='#2a2a2a'/> <!-- abs highlight --> <ellipse cx='90' cy='80' rx='28' ry='8' fill='#ffd966' opacity='0.35'/> <!-- supporting arm (right, vertical down to floor) --> <path d='M 140 78 L 140 124' fill='none' stroke='#ff7c1f' stroke-width='9' stroke-linecap='round'/> <ellipse cx='140' cy='126' rx='6' ry='3' fill='#ff9a3a'/> <!-- moving arm crossing to touch opposite shoulder --> <path d='M 134 78 Q 140 60 152 56' fill='none' stroke='#ff7c1f' stroke-width='8' stroke-linecap='round'/> <!-- hand near shoulder --> <ellipse cx='154' cy='56' rx='4.5' ry='2.5' fill='#ff9a3a'/> <!-- elbow joint of moving arm --> <circle cx='141' cy='66' r='4' fill='#c75a18' opacity='0.8'/> <!-- head looking down --> <line x1='140' y1='74' x2='152' y2='66' stroke='#ff7c1f' stroke-width='5' stroke-linecap='round'/> <circle cx='156' cy='62' r='9' fill='#ff9a3a' stroke='#c75a18' stroke-width='0.5'/> <circle cx='161' cy='64' r='1.5' fill='#1c1c28'/> <!-- motion arc indicator --> <path d='M 124 96 Q 116 80 124 64' fill='none' stroke='#ff9a00' stroke-width='1.4' stroke-dasharray='3 2' opacity='0.7'/> <path d='M 120 68 L 124 64 L 124 70' fill='none' stroke='#ff9a00' stroke-width='1.4' stroke-linecap='round'/> <text x='95' y='100' fill='#ff9a00' font-family='system-ui' font-size='9' font-weight='700'>alterna</text> </svg>`,
+    caption: "Posición de flexión. Toca el hombro contrario alternando. Caderas firmes, sin balanceo."
+  },
+  "Plancha Lateral": {
+    svg: `<svg viewBox='0 0 200 140' xmlns='http://www.w3.org/2000/svg'> <line x1='6' y1='128' x2='194' y2='128' stroke='#444' stroke-width='1.2'/> <ellipse cx='100' cy='130' rx='80' ry='2.5' fill='#000' opacity='0.45'/> <!-- guide line for diagonal body --> <line x1='30' y1='124' x2='160' y2='40' stroke='#2ecc71' stroke-width='0.8' stroke-dasharray='3 3' opacity='0.5'/> <!-- body diagonal --> <path d='M 30 124 L 50 110 L 90 84 L 140 50' fill='none' stroke='#ff7c1f' stroke-width='15' stroke-linecap='round'/> <!-- feet stacked on ground --> <ellipse cx='30' cy='126' rx='8' ry='3' fill='#2a2a2a'/> <ellipse cx='38' cy='124' rx='7' ry='2.5' fill='#444'/> <!-- oblique highlight --> <ellipse cx='88' cy='84' rx='10' ry='16' fill='#ffd966' opacity='0.35' transform='rotate(-30 88 84)'/> <!-- supporting arm (down to floor, perpendicular to body) --> <path d='M 90 86 L 70 124' fill='none' stroke='#ff7c1f' stroke-width='9' stroke-linecap='round'/> <!-- elbow on ground --> <ellipse cx='68' cy='126' rx='8' ry='3' fill='#c75a18'/> <!-- top arm raised straight up --> <path d='M 100 76 L 110 32' fill='none' stroke='#ff7c1f' stroke-width='8' stroke-linecap='round'/> <ellipse cx='112' cy='28' rx='5' ry='3' fill='#ff9a3a'/> <!-- head --> <circle cx='146' cy='42' r='10' fill='#ff9a3a' stroke='#c75a18' stroke-width='0.5'/> <circle cx='152' cy='42' r='1.5' fill='#1c1c28'/> <path d='M 149 46 Q 152 48 155 45' fill='none' stroke='#1c1c28' stroke-width='0.6'/> <!-- timer hold indicator --> <g opacity='0.9'> <circle cx='30' cy='30' r='13' fill='none' stroke='#ff9a00' stroke-width='1.5'/> <text x='30' y='34' fill='#ff9a00' font-family='system-ui' font-size='10' font-weight='700' text-anchor='middle'>HOLD</text> </g> </svg>`,
+    caption: "Apoyo en un codo y canto del pie. Cadera alta. Cuerpo recto. Hazlo cada lado."
+  },
+  "Remo con Piedra": {
+    svg: `<svg viewBox='0 0 200 140' xmlns='http://www.w3.org/2000/svg'> <line x1='6' y1='128' x2='194' y2='128' stroke='#444' stroke-width='1.2'/> <ellipse cx='95' cy='130' rx='40' ry='2.5' fill='#000' opacity='0.4'/> <!-- back leg --> <path d='M 76 128 L 76 90' fill='none' stroke='#ff7c1f' stroke-width='10' stroke-linecap='round'/> <ellipse cx='76' cy='128' rx='8' ry='3' fill='#2a2a2a'/> <!-- front leg slightly forward --> <path d='M 106 128 L 100 90' fill='none' stroke='#ff7c1f' stroke-width='10' stroke-linecap='round'/> <ellipse cx='106' cy='128' rx='8' ry='3' fill='#2a2a2a'/> <!-- knee bend hint --> <circle cx='102' cy='110' r='4' fill='#c75a18' opacity='0.7'/> <!-- pelvis --> <rect x='72' y='84' width='34' height='12' rx='5' fill='#ff7c1f' stroke='#c75a18' stroke-width='0.5'/> <!-- torso bent forward (horizontal) --> <path d='M 76 82 Q 110 70 144 64 L 146 76 Q 112 80 80 92 Z' fill='#ff7c1f' stroke='#c75a18' stroke-width='0.7'/> <!-- back highlight (lats) --> <ellipse cx='110' cy='78' rx='20' ry='4' fill='#ffd966' opacity='0.3'/> <!-- supporting arm (left, on knee/thigh) --> <path d='M 142 68 L 110 90' fill='none' stroke='#c75a18' stroke-width='6' stroke-linecap='round' opacity='0.7'/> <!-- pulling arm (rowing stone up) --> <path d='M 138 70 Q 132 84 130 100' fill='none' stroke='#ff7c1f' stroke-width='8' stroke-linecap='round'/> <!-- elbow drawn back --> <circle cx='130' cy='100' r='5' fill='#c75a18'/> <!-- forearm holding stone --> <path d='M 130 100 L 122 116' fill='none' stroke='#ff7c1f' stroke-width='7' stroke-linecap='round'/> <!-- stone --> <ellipse cx='120' cy='118' rx='10' ry='5' fill='#777' stroke='#444' stroke-width='1'/> <ellipse cx='117' cy='116' rx='5' ry='1.5' fill='#aaa' opacity='0.6'/> <!-- head --> <line x1='144' y1='62' x2='154' y2='56' stroke='#ff7c1f' stroke-width='5' stroke-linecap='round'/> <circle cx='158' cy='52' r='9' fill='#ff9a3a' stroke='#c75a18' stroke-width='0.5'/> <circle cx='163' cy='53' r='1.5' fill='#1c1c28'/> <!-- motion arrow (pulling up) --> <g opacity='0.85'> <path d='M 100 116 L 100 96 M 96 100 L 100 96 L 104 100' stroke='#ff9a00' stroke-width='2' fill='none' stroke-linecap='round'/> <text x='80' y='110' fill='#ff9a00' font-family='system-ui' font-size='9' font-weight='700'>tira</text> </g> </svg>`,
+    caption: "Inclinado hacia delante con espalda recta. Una mano apoyada. Tira la piedra hacia la cadera apretando el omóplato."
+  },
+  "Curl Bíceps con Piedra": {
+    svg: `<svg viewBox='0 0 200 140' xmlns='http://www.w3.org/2000/svg'> <line x1='6' y1='128' x2='194' y2='128' stroke='#444' stroke-width='1.2'/> <ellipse cx='100' cy='130' rx='24' ry='3' fill='#000' opacity='0.45'/> <!-- legs --> <path d='M 92 128 L 92 86' fill='none' stroke='#ff7c1f' stroke-width='10' stroke-linecap='round'/> <path d='M 108 128 L 108 86' fill='none' stroke='#ff7c1f' stroke-width='10' stroke-linecap='round'/> <ellipse cx='92' cy='128' rx='8' ry='3' fill='#2a2a2a'/> <ellipse cx='108' cy='128' rx='8' ry='3' fill='#2a2a2a'/> <!-- pelvis --> <rect x='86' y='78' width='28' height='12' rx='5' fill='#ff7c1f' stroke='#c75a18' stroke-width='0.5'/> <!-- torso --> <path d='M 84 76 L 116 76 L 113 44 L 87 44 Z' fill='#ff7c1f' stroke='#c75a18' stroke-width='0.6'/> <!-- chest/abs --> <ellipse cx='100' cy='60' rx='10' ry='14' fill='#ffd966' opacity='0.3'/> <!-- upper arms (held against body) --> <path d='M 82 46 L 80 70' fill='none' stroke='#ff7c1f' stroke-width='7' stroke-linecap='round'/> <path d='M 118 46 L 120 70' fill='none' stroke='#ff7c1f' stroke-width='7' stroke-linecap='round'/> <!-- bicep highlight (showing tension) --> <ellipse cx='80' cy='58' rx='3.5' ry='6' fill='#ffd966' opacity='0.45'/> <ellipse cx='120' cy='58' rx='3.5' ry='6' fill='#ffd966' opacity='0.45'/> <!-- forearms curled up (curl position) --> <path d='M 80 70 Q 84 60 92 54' fill='none' stroke='#ff7c1f' stroke-width='7' stroke-linecap='round'/> <path d='M 120 70 Q 116 60 108 54' fill='none' stroke='#ff7c1f' stroke-width='7' stroke-linecap='round'/> <!-- elbow joints --> <circle cx='80' cy='70' r='4' fill='#c75a18' opacity='0.8'/> <circle cx='120' cy='70' r='4' fill='#c75a18' opacity='0.8'/> <!-- stone at chest level held by both hands --> <ellipse cx='100' cy='50' rx='14' ry='6' fill='#777' stroke='#444' stroke-width='1'/> <ellipse cx='96' cy='48' rx='6' ry='2' fill='#aaa' opacity='0.6'/> <!-- hands --> <ellipse cx='90' cy='52' rx='4' ry='2.5' fill='#ff9a3a'/> <ellipse cx='110' cy='52' rx='4' ry='2.5' fill='#ff9a3a'/> <!-- head --> <line x1='100' y1='42' x2='100' y2='32' stroke='#ff7c1f' stroke-width='5' stroke-linecap='round'/> <circle cx='100' cy='24' r='10' fill='#ff9a3a' stroke='#c75a18' stroke-width='0.5'/> <circle cx='100' cy='24' r='1.5' fill='#1c1c28'/> <circle cx='105' cy='23' r='1' fill='#1c1c28'/> <!-- motion arrow --> <g opacity='0.85'> <path d='M 150 90 Q 150 70 150 56 M 146 60 L 150 56 L 154 60' stroke='#ff9a00' stroke-width='2' fill='none' stroke-linecap='round'/> <text x='156' y='76' fill='#ff9a00' font-family='system-ui' font-size='10' font-weight='700'>sube</text> </g> </svg>`,
+    caption: "De pie. Brazos pegados al cuerpo. Sube la piedra hacia el hombro doblando SOLO el codo."
+  },
+  "Superman": {
+    svg: `<svg viewBox='0 0 200 140' xmlns='http://www.w3.org/2000/svg'> <line x1='6' y1='128' x2='194' y2='128' stroke='#444' stroke-width='1.2'/> <ellipse cx='100' cy='130' rx='80' ry='2.5' fill='#000' opacity='0.5'/> <!-- lying face-down with arched body, arms and legs raised --> <!-- body (slightly arched curve) --> <path d='M 30 90 Q 100 100 170 90' fill='none' stroke='#ff7c1f' stroke-width='18' stroke-linecap='round'/> <!-- lower back highlight --> <ellipse cx='100' cy='98' rx='30' ry='5' fill='#ffd966' opacity='0.4'/> <!-- arms raised (going up from shoulders at right side) --> <path d='M 160 88 Q 175 75 180 60' fill='none' stroke='#ff7c1f' stroke-width='8' stroke-linecap='round'/> <path d='M 158 92 Q 172 80 178 65' fill='none' stroke='#c75a18' stroke-width='7' stroke-linecap='round' opacity='0.8'/> <ellipse cx='180' cy='58' rx='4' ry='3' fill='#ff9a3a'/> <!-- legs raised (going up from left side) --> <path d='M 40 88 Q 25 75 20 60' fill='none' stroke='#ff7c1f' stroke-width='9' stroke-linecap='round'/> <path d='M 42 92 Q 28 80 22 65' fill='none' stroke='#c75a18' stroke-width='8' stroke-linecap='round' opacity='0.8'/> <ellipse cx='20' cy='58' rx='5' ry='3' fill='#2a2a2a'/> <ellipse cx='22' cy='63' rx='4' ry='3' fill='#2a2a2a' opacity='0.85'/> <!-- head extending forward at right --> <line x1='168' y1='88' x2='178' y2='84' stroke='#ff7c1f' stroke-width='6' stroke-linecap='round'/> <circle cx='184' cy='82' r='9' fill='#ff9a3a' stroke='#c75a18' stroke-width='0.5'/> <circle cx='190' cy='82' r='1.5' fill='#1c1c28'/> <!-- motion arrows showing lift --> <g opacity='0.85'> <path d='M 30 50 L 30 30 M 26 34 L 30 30 L 34 34' stroke='#ff9a00' stroke-width='1.8' fill='none' stroke-linecap='round'/> <path d='M 170 50 L 170 30 M 166 34 L 170 30 L 174 34' stroke='#ff9a00' stroke-width='1.8' fill='none' stroke-linecap='round'/> <text x='100' y='32' fill='#ff9a00' font-family='system-ui' font-size='10' font-weight='700' text-anchor='middle'>2s arriba</text> </g> </svg>`,
+    caption: "Boca abajo. Sube brazos y piernas a la vez 2 segundos. Aprieta lumbares y glúteos. Baja lento."
+  },
+  "Dead Bug": {
+    svg: `<svg viewBox='0 0 200 140' xmlns='http://www.w3.org/2000/svg'> <line x1='6' y1='128' x2='194' y2='128' stroke='#444' stroke-width='1.2'/> <ellipse cx='100' cy='130' rx='80' ry='2.5' fill='#000' opacity='0.45'/> <!-- lying on back, body horizontal at floor level --> <rect x='40' y='106' width='100' height='18' rx='9' fill='#ff7c1f' stroke='#c75a18' stroke-width='0.6'/> <!-- core/abs highlight --> <ellipse cx='90' cy='115' rx='30' ry='6' fill='#ffd966' opacity='0.4'/> <!-- head --> <circle cx='34' cy='114' r='10' fill='#ff9a3a' stroke='#c75a18' stroke-width='0.5'/> <circle cx='30' cy='112' r='1.5' fill='#1c1c28'/> <!-- right arm extended up (overhead) --> <path d='M 50 108 L 30 70' fill='none' stroke='#ff7c1f' stroke-width='8' stroke-linecap='round'/> <ellipse cx='28' cy='68' rx='4' ry='3' fill='#ff9a3a'/> <!-- left arm bent up (vertical) --> <path d='M 60 106 L 60 70' fill='none' stroke='#c75a18' stroke-width='7' stroke-linecap='round' opacity='0.8'/> <!-- right leg extended (low, opposite to extended arm) --> <path d='M 130 108 L 160 96 L 178 90' fill='none' stroke='#ff7c1f' stroke-width='10' stroke-linecap='round'/> <ellipse cx='180' cy='88' rx='6' ry='3' fill='#2a2a2a'/> <!-- left leg bent (knee up to 90deg) --> <path d='M 130 106 L 140 78' fill='none' stroke='#c75a18' stroke-width='9' stroke-linecap='round' opacity='0.85'/> <path d='M 140 78 L 156 78' fill='none' stroke='#c75a18' stroke-width='8' stroke-linecap='round' opacity='0.85'/> <!-- knee joint --> <circle cx='140' cy='78' r='4' fill='#a8421b'/> <!-- guide note: opposite arm + leg --> <path d='M 28 60 Q 100 30 180 78' fill='none' stroke='#2ecc71' stroke-width='0.8' stroke-dasharray='3 3' opacity='0.5'/> <text x='100' y='38' fill='#2ecc71' font-family='system-ui' font-size='9' font-weight='700' text-anchor='middle'>opuestos a la vez</text> </svg>`,
+    caption: "Boca arriba, brazos y piernas arriba. Estira brazo y pierna CONTRARIOS. Lumbar siempre pegada al suelo."
+  },
+  "Hollow Body Hold": {
+    svg: `<svg viewBox='0 0 200 140' xmlns='http://www.w3.org/2000/svg'> <line x1='6' y1='128' x2='194' y2='128' stroke='#444' stroke-width='1.2'/> <ellipse cx='100' cy='130' rx='75' ry='2.5' fill='#000' opacity='0.45'/> <!-- arched body (banana shape: hands and feet up, lower back glued to floor) --> <path d='M 30 78 Q 100 110 170 78' fill='none' stroke='#ff7c1f' stroke-width='17' stroke-linecap='round'/> <!-- abs/core highlight (where the burn is) --> <ellipse cx='100' cy='100' rx='35' ry='6' fill='#ffd966' opacity='0.45'/> <!-- arms extended overhead at right --> <path d='M 158 80 Q 168 70 178 60' fill='none' stroke='#ff7c1f' stroke-width='8' stroke-linecap='round'/> <ellipse cx='180' cy='58' rx='4' ry='2.5' fill='#ff9a3a'/> <!-- legs extended at left --> <path d='M 42 80 Q 30 72 18 64' fill='none' stroke='#ff7c1f' stroke-width='9' stroke-linecap='round'/> <ellipse cx='16' cy='62' rx='6' ry='3' fill='#2a2a2a'/> <!-- head at right (lifted slightly) --> <line x1='168' y1='78' x2='176' y2='72' stroke='#ff7c1f' stroke-width='6' stroke-linecap='round'/> <circle cx='182' cy='68' r='9' fill='#ff9a3a' stroke='#c75a18' stroke-width='0.5'/> <circle cx='188' cy='68' r='1.5' fill='#1c1c28'/> <!-- guide: lower back glued to floor --> <line x1='80' y1='118' x2='120' y2='118' stroke='#2ecc71' stroke-width='2' opacity='0.8'/> <text x='100' y='128' fill='#2ecc71' font-family='system-ui' font-size='9' font-weight='700' text-anchor='middle'>lumbar al suelo</text> <!-- HOLD indicator --> <g opacity='0.9'> <circle cx='30' cy='30' r='13' fill='none' stroke='#ff9a00' stroke-width='1.5'/> <text x='30' y='34' fill='#ff9a00' font-family='system-ui' font-size='10' font-weight='700' text-anchor='middle'>HOLD</text> </g> </svg>`,
+    caption: "Tumbado. Brazos arriba, piernas a 30 cm del suelo. Lumbar pegada. Aguanta."
+  },
+  "Elevación de Rodillas": {
+    svg: `<svg viewBox='0 0 200 140' xmlns='http://www.w3.org/2000/svg'> <line x1='6' y1='128' x2='194' y2='128' stroke='#444' stroke-width='1.2'/> <ellipse cx='100' cy='130' rx='80' ry='2.5' fill='#000' opacity='0.45'/> <!-- body lying on back --> <rect x='32' y='108' width='90' height='18' rx='9' fill='#ff7c1f' stroke='#c75a18' stroke-width='0.6'/> <!-- abs highlight --> <ellipse cx='80' cy='117' rx='30' ry='6' fill='#ffd966' opacity='0.45'/> <!-- head --> <circle cx='26' cy='116' r='10' fill='#ff9a3a' stroke='#c75a18' stroke-width='0.5'/> <circle cx='22' cy='114' r='1.5' fill='#1c1c28'/> <!-- arms down at sides --> <path d='M 38 124 L 70 130' fill='none' stroke='#c75a18' stroke-width='6' stroke-linecap='round' opacity='0.8'/> <!-- thigh raised toward chest --> <path d='M 116 108 L 140 68' fill='none' stroke='#ff7c1f' stroke-width='11' stroke-linecap='round'/> <!-- knee joint --> <circle cx='142' cy='68' r='6' fill='#c75a18'/> <!-- shin folded back --> <path d='M 142 68 L 118 60' fill='none' stroke='#ff7c1f' stroke-width='10' stroke-linecap='round'/> <!-- foot --> <ellipse cx='114' cy='58' rx='7' ry='3' fill='#2a2a2a'/> <!-- motion arrow showing knee up --> <g opacity='0.85'> <path d='M 170 110 Q 168 90 162 76 M 158 80 L 162 76 L 166 80' stroke='#ff9a00' stroke-width='2' fill='none' stroke-linecap='round'/> <text x='168' y='100' fill='#ff9a00' font-family='system-ui' font-size='9' font-weight='700'>sube</text> </g> </svg>`,
+    caption: "Tumbado boca arriba. Sube rodillas al pecho lentamente. Baja sin tocar el suelo."
+  },
+  "Bicicleta Lenta": {
+    svg: `<svg viewBox='0 0 200 140' xmlns='http://www.w3.org/2000/svg'> <line x1='6' y1='128' x2='194' y2='128' stroke='#444' stroke-width='1.2'/> <ellipse cx='100' cy='130' rx='80' ry='2.5' fill='#000' opacity='0.45'/> <!-- torso slightly elevated (crunched up) --> <path d='M 40 106 L 124 100 L 124 118 L 42 124 Z' fill='#ff7c1f' stroke='#c75a18' stroke-width='0.6'/> <!-- oblique highlight (twisting muscles) --> <ellipse cx='80' cy='110' rx='32' ry='8' fill='#ffd966' opacity='0.45'/> <!-- head with neck slightly lifted --> <line x1='42' y1='110' x2='28' y2='96' stroke='#ff7c1f' stroke-width='6' stroke-linecap='round'/> <circle cx='22' cy='90' r='10' fill='#ff9a3a' stroke='#c75a18' stroke-width='0.5'/> <circle cx='22' cy='88' r='1.5' fill='#1c1c28'/> <!-- hands behind head --> <ellipse cx='14' cy='84' rx='5' ry='3' fill='#ff9a3a'/> <!-- elbow coming forward (crunch direction) --> <path d='M 32 96 Q 50 90 70 86' fill='none' stroke='#ff7c1f' stroke-width='7' stroke-linecap='round'/> <circle cx='70' cy='86' r='5' fill='#c75a18'/> <!-- forearm to head/temple --> <path d='M 70 86 L 30 86' fill='none' stroke='#c75a18' stroke-width='6' stroke-linecap='round' opacity='0.6'/> <!-- one leg extended (right) --> <path d='M 124 108 L 170 96' fill='none' stroke='#ff7c1f' stroke-width='10' stroke-linecap='round'/> <ellipse cx='174' cy='95' rx='6' ry='3' fill='#2a2a2a'/> <!-- other leg bent toward elbow (left) --> <path d='M 124 116 L 100 80' fill='none' stroke='#ff7c1f' stroke-width='10' stroke-linecap='round'/> <circle cx='100' cy='80' r='6' fill='#c75a18'/> <path d='M 100 80 L 80 90' fill='none' stroke='#ff7c1f' stroke-width='9' stroke-linecap='round'/> <ellipse cx='76' cy='91' rx='6' ry='3' fill='#2a2a2a'/> <!-- crossover guide line --> <path d='M 70 86 Q 85 84 100 80' fill='none' stroke='#2ecc71' stroke-width='0.8' stroke-dasharray='3 3' opacity='0.6'/> <text x='86' y='68' fill='#2ecc71' font-family='system-ui' font-size='9' font-weight='700' text-anchor='middle'>codo a rodilla</text> </svg>`,
+    caption: "Codo derecho a rodilla izquierda alternando. LENTO y controlado. Sin tirones de cuello."
+  }
+};
+
+// ============================================================
+// SUN SALUTATION (Saludo al Sol)
+// ============================================================
+const SUN_POSES = [
+  { svg: `<svg viewBox='0 0 100 120' xmlns='http://www.w3.org/2000/svg'> <line x1='5' y1='110' x2='95' y2='110' stroke='#444' stroke-width='1'/> <ellipse cx='50' cy='112' rx='14' ry='1.8' fill='#000' opacity='0.4'/> <!-- legs together --> <rect x='44' y='65' width='6' height='45' rx='3' fill='#ff7c1f'/> <rect x='50' y='65' width='6' height='45' rx='3' fill='#ff7c1f'/> <ellipse cx='47' cy='110' rx='5' ry='2' fill='#2a2a2a'/> <ellipse cx='53' cy='110' rx='5' ry='2' fill='#2a2a2a'/> <!-- pelvis --> <rect x='42' y='60' width='16' height='10' rx='3' fill='#ff7c1f'/> <!-- torso --> <path d='M 41 62 L 59 62 L 57 30 L 43 30 Z' fill='#ff7c1f' stroke='#c75a18' stroke-width='0.5'/> <!-- arms folded at chest (namaste) --> <path d='M 43 32 Q 36 40 44 50' fill='none' stroke='#ff7c1f' stroke-width='4' stroke-linecap='round'/> <path d='M 57 32 Q 64 40 56 50' fill='none' stroke='#ff7c1f' stroke-width='4' stroke-linecap='round'/> <!-- hands meeting --> <rect x='44' y='46' width='12' height='8' rx='2' fill='#ff9a3a' stroke='#c75a18' stroke-width='0.4'/> <!-- head --> <line x1='50' y1='28' x2='50' y2='22' stroke='#ff7c1f' stroke-width='4' stroke-linecap='round'/> <circle cx='50' cy='15' r='8' fill='#ff9a3a' stroke='#c75a18' stroke-width='0.5'/> <circle cx='53' cy='14' r='1' fill='#1c1c28'/> </svg>`, text: "Tadasana — De pie, manos juntas en el pecho. Respira hondo." },
+  { svg: `<svg viewBox='0 0 100 120' xmlns='http://www.w3.org/2000/svg'> <line x1='5' y1='110' x2='95' y2='110' stroke='#444' stroke-width='1'/> <ellipse cx='50' cy='112' rx='14' ry='1.8' fill='#000' opacity='0.4'/> <rect x='44' y='65' width='6' height='45' rx='3' fill='#ff7c1f'/> <rect x='50' y='65' width='6' height='45' rx='3' fill='#ff7c1f'/> <ellipse cx='47' cy='110' rx='5' ry='2' fill='#2a2a2a'/> <ellipse cx='53' cy='110' rx='5' ry='2' fill='#2a2a2a'/> <rect x='42' y='60' width='16' height='10' rx='3' fill='#ff7c1f'/> <path d='M 41 62 L 59 62 L 57 30 L 43 30 Z' fill='#ff7c1f' stroke='#c75a18' stroke-width='0.5'/> <!-- arms reaching up --> <path d='M 43 32 L 38 6' fill='none' stroke='#ff7c1f' stroke-width='5' stroke-linecap='round'/> <path d='M 57 32 L 62 6' fill='none' stroke='#ff7c1f' stroke-width='5' stroke-linecap='round'/> <ellipse cx='37' cy='4' rx='3' ry='2' fill='#ff9a3a'/> <ellipse cx='63' cy='4' rx='3' ry='2' fill='#ff9a3a'/> <!-- head looking slightly up --> <line x1='50' y1='28' x2='50' y2='22' stroke='#ff7c1f' stroke-width='4' stroke-linecap='round'/> <circle cx='50' cy='15' r='8' fill='#ff9a3a' stroke='#c75a18' stroke-width='0.5'/> <circle cx='52' cy='12' r='1' fill='#1c1c28'/> </svg>`, text: "Brazos al cielo — Inspira y estira los brazos arriba" },
+  { svg: `<svg viewBox='0 0 100 120' xmlns='http://www.w3.org/2000/svg'> <line x1='5' y1='110' x2='95' y2='110' stroke='#444' stroke-width='1'/> <ellipse cx='50' cy='112' rx='16' ry='1.8' fill='#000' opacity='0.4'/> <!-- legs straight --> <rect x='44' y='55' width='6' height='55' rx='3' fill='#ff7c1f'/> <rect x='50' y='55' width='6' height='55' rx='3' fill='#ff7c1f'/> <ellipse cx='47' cy='110' rx='5' ry='2' fill='#2a2a2a'/> <ellipse cx='53' cy='110' rx='5' ry='2' fill='#2a2a2a'/> <!-- pelvis --> <rect x='42' y='50' width='16' height='10' rx='3' fill='#ff7c1f'/> <!-- torso folded forward (hanging down) --> <path d='M 42 52 L 58 52 L 64 82 L 38 82 Z' fill='#ff7c1f' stroke='#c75a18' stroke-width='0.5'/> <!-- head down between legs --> <line x1='51' y1='82' x2='51' y2='90' stroke='#ff7c1f' stroke-width='4' stroke-linecap='round'/> <circle cx='51' cy='96' r='8' fill='#ff9a3a' stroke='#c75a18' stroke-width='0.5'/> <!-- arms hanging down to feet --> <path d='M 40 78 L 44 108' fill='none' stroke='#ff7c1f' stroke-width='4' stroke-linecap='round'/> <path d='M 62 78 L 58 108' fill='none' stroke='#ff7c1f' stroke-width='4' stroke-linecap='round'/> <ellipse cx='43' cy='110' rx='3' ry='1.5' fill='#ff9a3a'/> <ellipse cx='59' cy='110' rx='3' ry='1.5' fill='#ff9a3a'/> </svg>`, text: "Flexión adelante — Exhala, baja a tocar los pies" },
+  { svg: `<svg viewBox='0 0 100 120' xmlns='http://www.w3.org/2000/svg'> <line x1='5' y1='110' x2='95' y2='110' stroke='#444' stroke-width='1'/> <ellipse cx='50' cy='112' rx='16' ry='1.8' fill='#000' opacity='0.4'/> <rect x='44' y='55' width='6' height='55' rx='3' fill='#ff7c1f'/> <rect x='50' y='55' width='6' height='55' rx='3' fill='#ff7c1f'/> <ellipse cx='47' cy='110' rx='5' ry='2' fill='#2a2a2a'/> <ellipse cx='53' cy='110' rx='5' ry='2' fill='#2a2a2a'/> <rect x='42' y='50' width='16' height='10' rx='3' fill='#ff7c1f'/> <!-- torso horizontal (flat back) --> <path d='M 42 50 L 58 50 L 88 64 L 88 74 L 42 60 Z' fill='#ff7c1f' stroke='#c75a18' stroke-width='0.5'/> <!-- head looking forward --> <circle cx='90' cy='66' r='8' fill='#ff9a3a' stroke='#c75a18' stroke-width='0.5'/> <circle cx='93' cy='67' r='1' fill='#1c1c28'/> <!-- arms going down to shins --> <path d='M 70 72 L 56 96' fill='none' stroke='#ff7c1f' stroke-width='5' stroke-linecap='round'/> <path d='M 64 72 L 52 96' fill='none' stroke='#c75a18' stroke-width='4' stroke-linecap='round' opacity='0.8'/> <!-- form guide: flat back --> <line x1='42' y1='44' x2='86' y2='58' stroke='#2ecc71' stroke-width='0.6' stroke-dasharray='2 2' opacity='0.6'/> </svg>`, text: "Media flexión — Espalda plana, manos en las espinillas" },
+  { svg: `<svg viewBox='0 0 100 120' xmlns='http://www.w3.org/2000/svg'> <line x1='5' y1='110' x2='95' y2='110' stroke='#444' stroke-width='1'/> <ellipse cx='50' cy='112' rx='40' ry='2' fill='#000' opacity='0.45'/> <!-- horizontal body --> <path d='M 14 78 L 70 72 L 86 72' stroke='#ff7c1f' stroke-width='12' stroke-linecap='round' fill='none'/> <ellipse cx='48' cy='76' rx='20' ry='4' fill='#ffd966' opacity='0.35'/> <!-- feet --> <ellipse cx='12' cy='80' rx='5' ry='2' fill='#2a2a2a'/> <!-- supporting arms --> <path d='M 82 72 L 82 108' fill='none' stroke='#ff7c1f' stroke-width='6' stroke-linecap='round'/> <path d='M 75 74 L 76 108' fill='none' stroke='#c75a18' stroke-width='5' stroke-linecap='round' opacity='0.75'/> <ellipse cx='82' cy='110' rx='4' ry='1.8' fill='#ff9a3a'/> <!-- head --> <line x1='82' y1='68' x2='86' y2='62' stroke='#ff7c1f' stroke-width='4' stroke-linecap='round'/> <circle cx='90' cy='58' r='7' fill='#ff9a3a' stroke='#c75a18' stroke-width='0.5'/> </svg>`, text: "Plancha alta — Salta atrás a posición de flexión, brazos firmes" },
+  { svg: `<svg viewBox='0 0 100 120' xmlns='http://www.w3.org/2000/svg'> <line x1='5' y1='110' x2='95' y2='110' stroke='#444' stroke-width='1'/> <ellipse cx='50' cy='112' rx='40' ry='2' fill='#000' opacity='0.5'/> <!-- horizontal body (lower) --> <path d='M 14 92 L 70 88 L 86 88' stroke='#ff7c1f' stroke-width='11' stroke-linecap='round' fill='none'/> <ellipse cx='48' cy='90' rx='20' ry='3.5' fill='#ffd966' opacity='0.35'/> <ellipse cx='12' cy='94' rx='5' ry='2' fill='#2a2a2a'/> <!-- bent arms (elbows tucked) --> <path d='M 82 88 L 80 96 L 84 108' fill='none' stroke='#ff7c1f' stroke-width='6' stroke-linecap='round'/> <path d='M 75 90 L 73 96 L 77 108' fill='none' stroke='#c75a18' stroke-width='5' stroke-linecap='round' opacity='0.75'/> <!-- elbow back highlight --> <circle cx='80' cy='96' r='3' fill='#c75a18'/> <!-- head --> <line x1='82' y1='84' x2='86' y2='78' stroke='#ff7c1f' stroke-width='4' stroke-linecap='round'/> <circle cx='90' cy='74' r='7' fill='#ff9a3a' stroke='#c75a18' stroke-width='0.5'/> </svg>`, text: "Plancha baja — Baja despacio doblando codos pegados al cuerpo" },
+  { svg: `<svg viewBox='0 0 100 120' xmlns='http://www.w3.org/2000/svg'> <line x1='5' y1='110' x2='95' y2='110' stroke='#444' stroke-width='1'/> <ellipse cx='50' cy='112' rx='40' ry='2' fill='#000' opacity='0.5'/> <!-- legs and hips on ground, chest arching up --> <path d='M 10 105 Q 35 102 56 88 Q 70 72 78 50' fill='none' stroke='#ff7c1f' stroke-width='12' stroke-linecap='round'/> <!-- chest highlight --> <ellipse cx='66' cy='66' rx='6' ry='10' fill='#ffd966' opacity='0.4' transform='rotate(30 66 66)'/> <!-- feet --> <ellipse cx='8' cy='106' rx='4' ry='2' fill='#2a2a2a'/> <!-- arms supporting --> <path d='M 70 60 L 70 108' fill='none' stroke='#ff7c1f' stroke-width='5' stroke-linecap='round'/> <path d='M 64 60 L 64 108' fill='none' stroke='#c75a18' stroke-width='4' stroke-linecap='round' opacity='0.75'/> <!-- head up looking up --> <line x1='78' y1='46' x2='84' y2='38' stroke='#ff7c1f' stroke-width='4' stroke-linecap='round'/> <circle cx='86' cy='32' r='8' fill='#ff9a3a' stroke='#c75a18' stroke-width='0.5'/> <circle cx='89' cy='29' r='1' fill='#1c1c28'/> </svg>`, text: "Cobra / Perro arriba — Pecho arriba, cadera abajo, mira al cielo" },
+  { svg: `<svg viewBox='0 0 100 120' xmlns='http://www.w3.org/2000/svg'> <line x1='5' y1='110' x2='95' y2='110' stroke='#444' stroke-width='1'/> <ellipse cx='50' cy='112' rx='42' ry='2' fill='#000' opacity='0.45'/> <!-- legs (long, going from feet on floor up to peak) --> <path d='M 14 108 Q 30 78 50 28' fill='none' stroke='#ff7c1f' stroke-width='10' stroke-linecap='round'/> <ellipse cx='12' cy='110' rx='5' ry='2' fill='#2a2a2a'/> <!-- arms going from hips peak down to floor --> <path d='M 50 28 Q 70 65 86 108' fill='none' stroke='#ff7c1f' stroke-width='9' stroke-linecap='round'/> <ellipse cx='86' cy='110' rx='5' ry='2' fill='#ff9a3a'/> <!-- pelvis peak --> <ellipse cx='50' cy='26' rx='10' ry='6' fill='#ff7c1f' stroke='#c75a18' stroke-width='0.5'/> <ellipse cx='50' cy='22' rx='5' ry='3' fill='#ffd966' opacity='0.4'/> <!-- head down between arms --> <line x1='52' y1='34' x2='58' y2='50' stroke='#ff7c1f' stroke-width='4' stroke-linecap='round'/> <circle cx='60' cy='56' r='7' fill='#ff9a3a' stroke='#c75a18' stroke-width='0.5'/> <!-- guide line: V invertida --> <path d='M 14 108 L 50 26 L 86 108' fill='none' stroke='#2ecc71' stroke-width='0.6' stroke-dasharray='2 2' opacity='0.4'/> </svg>`, text: "Perro abajo — V invertida, talones al suelo, mira al ombligo" },
+  { svg: `<svg viewBox='0 0 100 120' xmlns='http://www.w3.org/2000/svg'> <line x1='5' y1='110' x2='95' y2='110' stroke='#444' stroke-width='1'/> <ellipse cx='50' cy='112' rx='30' ry='2' fill='#000' opacity='0.4'/> <!-- back leg extended --> <path d='M 10 108 L 50 76' fill='none' stroke='#ff7c1f' stroke-width='9' stroke-linecap='round'/> <ellipse cx='8' cy='110' rx='5' ry='2' fill='#2a2a2a'/> <!-- front leg bent (knee up) --> <path d='M 70 110 L 65 80' fill='none' stroke='#ff7c1f' stroke-width='10' stroke-linecap='round'/> <ellipse cx='72' cy='110' rx='5' ry='2' fill='#2a2a2a'/> <!-- knee joint front --> <circle cx='65' cy='80' r='5' fill='#c75a18'/> <!-- thigh up from knee --> <path d='M 65 80 L 56 60' fill='none' stroke='#ff7c1f' stroke-width='10' stroke-linecap='round'/> <!-- pelvis --> <ellipse cx='52' cy='58' rx='9' ry='5' fill='#ff7c1f' stroke='#c75a18' stroke-width='0.5'/> <!-- torso vertical --> <path d='M 46 56 L 60 56 L 58 28 L 48 28 Z' fill='#ff7c1f' stroke='#c75a18' stroke-width='0.5'/> <!-- arms reaching up --> <path d='M 48 30 L 42 8' fill='none' stroke='#ff7c1f' stroke-width='4' stroke-linecap='round'/> <path d='M 58 30 L 64 8' fill='none' stroke='#ff7c1f' stroke-width='4' stroke-linecap='round'/> <!-- head --> <line x1='53' y1='26' x2='53' y2='20' stroke='#ff7c1f' stroke-width='4' stroke-linecap='round'/> <circle cx='53' cy='14' r='7' fill='#ff9a3a' stroke='#c75a18' stroke-width='0.5'/> <circle cx='55' cy='12' r='1' fill='#1c1c28'/> </svg>`, text: "Zancada — Pie derecho entre las manos, rodilla atrás baja" },
+  { svg: `<svg viewBox='0 0 100 120' xmlns='http://www.w3.org/2000/svg'> <line x1='5' y1='110' x2='95' y2='110' stroke='#444' stroke-width='1'/> <ellipse cx='50' cy='112' rx='16' ry='1.8' fill='#000' opacity='0.4'/> <!-- legs straight --> <rect x='44' y='55' width='6' height='55' rx='3' fill='#ff7c1f'/> <rect x='50' y='55' width='6' height='55' rx='3' fill='#ff7c1f'/> <ellipse cx='47' cy='110' rx='5' ry='2' fill='#2a2a2a'/> <ellipse cx='53' cy='110' rx='5' ry='2' fill='#2a2a2a'/> <!-- pelvis --> <rect x='42' y='50' width='16' height='10' rx='3' fill='#ff7c1f'/> <!-- torso folded forward (hanging down) --> <path d='M 42 52 L 58 52 L 64 82 L 38 82 Z' fill='#ff7c1f' stroke='#c75a18' stroke-width='0.5'/> <!-- head down between legs --> <line x1='51' y1='82' x2='51' y2='90' stroke='#ff7c1f' stroke-width='4' stroke-linecap='round'/> <circle cx='51' cy='96' r='8' fill='#ff9a3a' stroke='#c75a18' stroke-width='0.5'/> <!-- arms hanging down to feet --> <path d='M 40 78 L 44 108' fill='none' stroke='#ff7c1f' stroke-width='4' stroke-linecap='round'/> <path d='M 62 78 L 58 108' fill='none' stroke='#ff7c1f' stroke-width='4' stroke-linecap='round'/> <ellipse cx='43' cy='110' rx='3' ry='1.5' fill='#ff9a3a'/> <ellipse cx='59' cy='110' rx='3' ry='1.5' fill='#ff9a3a'/> </svg>`, text: "Flexión adelante — El pie izquierdo se une al derecho, baja" },
+  { svg: `<svg viewBox='0 0 100 120' xmlns='http://www.w3.org/2000/svg'> <line x1='5' y1='110' x2='95' y2='110' stroke='#444' stroke-width='1'/> <ellipse cx='50' cy='112' rx='14' ry='1.8' fill='#000' opacity='0.4'/> <rect x='44' y='65' width='6' height='45' rx='3' fill='#ff7c1f'/> <rect x='50' y='65' width='6' height='45' rx='3' fill='#ff7c1f'/> <ellipse cx='47' cy='110' rx='5' ry='2' fill='#2a2a2a'/> <ellipse cx='53' cy='110' rx='5' ry='2' fill='#2a2a2a'/> <rect x='42' y='60' width='16' height='10' rx='3' fill='#ff7c1f'/> <path d='M 41 62 L 59 62 L 57 30 L 43 30 Z' fill='#ff7c1f' stroke='#c75a18' stroke-width='0.5'/> <!-- arms reaching up --> <path d='M 43 32 L 38 6' fill='none' stroke='#ff7c1f' stroke-width='5' stroke-linecap='round'/> <path d='M 57 32 L 62 6' fill='none' stroke='#ff7c1f' stroke-width='5' stroke-linecap='round'/> <ellipse cx='37' cy='4' rx='3' ry='2' fill='#ff9a3a'/> <ellipse cx='63' cy='4' rx='3' ry='2' fill='#ff9a3a'/> <!-- head looking slightly up --> <line x1='50' y1='28' x2='50' y2='22' stroke='#ff7c1f' stroke-width='4' stroke-linecap='round'/> <circle cx='50' cy='15' r='8' fill='#ff9a3a' stroke='#c75a18' stroke-width='0.5'/> <circle cx='52' cy='12' r='1' fill='#1c1c28'/> </svg>`, text: "Brazos al cielo — Sube incorporándote con los brazos arriba" },
+  { svg: `<svg viewBox='0 0 100 120' xmlns='http://www.w3.org/2000/svg'> <line x1='5' y1='110' x2='95' y2='110' stroke='#444' stroke-width='1'/> <ellipse cx='50' cy='112' rx='14' ry='1.8' fill='#000' opacity='0.4'/> <!-- legs together --> <rect x='44' y='65' width='6' height='45' rx='3' fill='#ff7c1f'/> <rect x='50' y='65' width='6' height='45' rx='3' fill='#ff7c1f'/> <ellipse cx='47' cy='110' rx='5' ry='2' fill='#2a2a2a'/> <ellipse cx='53' cy='110' rx='5' ry='2' fill='#2a2a2a'/> <!-- pelvis --> <rect x='42' y='60' width='16' height='10' rx='3' fill='#ff7c1f'/> <!-- torso --> <path d='M 41 62 L 59 62 L 57 30 L 43 30 Z' fill='#ff7c1f' stroke='#c75a18' stroke-width='0.5'/> <!-- arms folded at chest (namaste) --> <path d='M 43 32 Q 36 40 44 50' fill='none' stroke='#ff7c1f' stroke-width='4' stroke-linecap='round'/> <path d='M 57 32 Q 64 40 56 50' fill='none' stroke='#ff7c1f' stroke-width='4' stroke-linecap='round'/> <!-- hands meeting --> <rect x='44' y='46' width='12' height='8' rx='2' fill='#ff9a3a' stroke='#c75a18' stroke-width='0.4'/> <!-- head --> <line x1='50' y1='28' x2='50' y2='22' stroke='#ff7c1f' stroke-width='4' stroke-linecap='round'/> <circle cx='50' cy='15' r='8' fill='#ff9a3a' stroke='#c75a18' stroke-width='0.5'/> <circle cx='53' cy='14' r='1' fill='#1c1c28'/> </svg>`, text: "Tadasana — Manos al pecho, cierra la ronda. Repite con pierna izquierda." }
+];
+
+// ============================================================
+// PROGRAM DAYS
+// ============================================================
+const DAYS = [
+  {
+    label: "LUNES", sub: "Empuje · Pecho · Hombros · Tríceps", badge: "DÍA 1", badgeClass: "",
+    exercises: [
+      { name: "Flexiones Inclinadas", sets: 3, reps: 8, rest: 45 },
+      { name: "Press Hombro con Piedra", sets: 3, reps: 10, rest: 45, note: "Con ambas manos" },
+      { name: "Fondos Tríceps Silla", sets: 3, reps: 8, rest: 45 },
+      { name: "Plancha Frontal", sets: 2, reps: null, rest: 30, duration: 25 }
+    ]
+  },
+  {
+    label: "MARTES", sub: "Core · Abdomen Profundo", badge: "DÍA 2", badgeClass: "b",
+    exercises: [
+      { name: "Dead Bug", sets: 3, reps: 8, rest: 30, note: "Cada lado" },
+      { name: "Plancha Frontal", sets: 2, reps: null, rest: 30, duration: 25 },
+      { name: "Bicicleta Lenta", sets: 2, reps: 12, rest: 30, note: "Cada lado" }
+    ]
+  },
+  {
+    label: "MIÉRCOLES", sub: "Tirón · Espalda · Bíceps", badge: "DÍA 3", badgeClass: "c",
+    exercises: [
+      { name: "Remo con Piedra", sets: 3, reps: 10, rest: 45, note: "Cada brazo" },
+      { name: "Curl Bíceps con Piedra", sets: 3, reps: 10, rest: 30 },
+      { name: "Superman", sets: 3, reps: 10, rest: 30 },
+      { name: "Plancha Lateral", sets: 2, reps: null, rest: 30, duration: 20, note: "Cada lado" }
+    ]
+  },
+  {
+    label: "JUEVES", sub: "Core · Abdomen Bajo", badge: "DÍA 4", badgeClass: "b",
+    exercises: [
+      { name: "Elevación de Rodillas", sets: 3, reps: 10, rest: 30 },
+      { name: "Hollow Body Hold", sets: 3, reps: null, rest: 30, duration: 20 },
+      { name: "Plancha Toque Hombro", sets: 2, reps: 10, rest: 30 }
+    ]
+  },
+  {
+    label: "VIERNES", sub: "Empuje · Variante", badge: "DÍA 5", badgeClass: "",
+    exercises: [
+      { name: "Flexiones Rodillas", sets: 3, reps: 8, rest: 45 },
+      { name: "Pike Push-Up", sets: 3, reps: 6, rest: 45 },
+      { name: "Press Hombro con Piedra", sets: 3, reps: 10, rest: 45 },
+      { name: "Plancha Frontal", sets: 2, reps: null, rest: 30, duration: 30 }
+    ]
+  },
+  {
+    label: "SÁBADO", sub: "Cuerpo Entero · Suave", badge: "DÍA 6", badgeClass: "c",
+    exercises: [
+      { name: "Flexiones Inclinadas", sets: 2, reps: 8, rest: 30 },
+      { name: "Remo con Piedra", sets: 2, reps: 10, rest: 30, note: "Cada brazo" },
+      { name: "Plancha Frontal", sets: 2, reps: null, rest: 30, duration: 25 },
+      { name: "Superman", sets: 2, reps: 10, rest: 30 }
+    ]
+  },
+  {
+    label: "DOMINGO", sub: "Descanso · Solo Saludo al Sol", badge: "DESCANSO", badgeClass: "rest",
+    exercises: []
+  }
+];
+
+// ============================================================
+// STATE
+// ============================================================
+let currentDay = new Date().getDay();
+if (currentDay === 0) currentDay = 6; else currentDay--;
+
+let activeEx = null; // index of active exercise, or 'sun' for sun salutation
+let timerInterval = null;
+let timerSeconds = 0;
+let timerTotal = 0;
+let timerRunning = false;
+let timerMode = 'work'; // 'work' or 'rest'
+let completedExercises = {};
+let completedDays = [];
+let streak = 0;
+let firstUseDate = null;
+let manualWeek = null; // null = auto
+let soundEnabled = true;
+let wakeLockEnabled = true;
+let wakeLock = null;
+
+// Load from storage
+try { completedExercises = JSON.parse(localStorage.getItem('completedEx') || '{}'); } catch(e){}
+try { completedDays = JSON.parse(localStorage.getItem('completedDays') || '[]'); } catch(e){}
+try { streak = parseInt(localStorage.getItem('streak') || '0'); } catch(e){}
+try { firstUseDate = localStorage.getItem('firstUseDate'); } catch(e){}
+try { manualWeek = JSON.parse(localStorage.getItem('manualWeek') || 'null'); } catch(e){}
+try { soundEnabled = localStorage.getItem('soundEnabled') !== 'false'; } catch(e){}
+try { wakeLockEnabled = localStorage.getItem('wakeLockEnabled') !== 'false'; } catch(e){}
+
+if (!firstUseDate) {
+  firstUseDate = new Date().toISOString();
+  localStorage.setItem('firstUseDate', firstUseDate);
+}
+
+function save() {
+  try {
+    localStorage.setItem('completedEx', JSON.stringify(completedExercises));
+    localStorage.setItem('completedDays', JSON.stringify(completedDays));
+    localStorage.setItem('streak', streak.toString());
+    localStorage.setItem('manualWeek', JSON.stringify(manualWeek));
+    localStorage.setItem('soundEnabled', soundEnabled.toString());
+    localStorage.setItem('wakeLockEnabled', wakeLockEnabled.toString());
+  } catch(e){}
+}
+
+// ============================================================
+// PROGRESSION (week 1-4 auto)
+// ============================================================
+function getCurrentWeek() {
+  if (manualWeek !== null) return manualWeek;
+  const start = new Date(firstUseDate);
+  const now = new Date();
+  const diffDays = Math.floor((now - start) / (1000 * 60 * 60 * 24));
+  const week = Math.min(4, Math.floor(diffDays / 7) + 1);
+  return Math.max(1, week);
+}
+
+function progressedReps(baseReps) {
+  if (baseReps === null) return null;
+  const week = getCurrentWeek();
+  return baseReps + (week - 1); // +0, +1, +2, +3
+}
+
+function progressedDuration(baseDuration) {
+  if (!baseDuration) return baseDuration;
+  const week = getCurrentWeek();
+  return baseDuration + (week - 1) * 5; // +0, +5, +10, +15 sec
+}
+
+// ============================================================
+// AUDIO (Web Audio API — NO interrumpe música de fondo en iOS)
+// ============================================================
+let audioCtx = null;
+function initAudio() {
+  if (audioCtx) return;
+  try {
+    const AC = window.AudioContext || window.webkitAudioContext;
+    if (AC) audioCtx = new AC();
+  } catch(e) {}
+}
+function beep(freq, dur, vol) {
+  if (!soundEnabled || !audioCtx) return;
+  try {
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.frequency.value = freq || 880;
+    osc.type = 'sine';
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    gain.gain.setValueAtTime(vol || 0.15, audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + (dur || 0.18));
+    osc.start();
+    osc.stop(audioCtx.currentTime + (dur || 0.18));
+  } catch(e) {}
+}
+function timerEndSound() {
+  beep(880, 0.15, 0.2);
+  setTimeout(() => beep(1100, 0.2, 0.2), 180);
+}
+function setDoneSound() {
+  beep(660, 0.1, 0.15);
+}
+// Init audio on first tap
+['touchstart','click'].forEach(ev => {
+  document.addEventListener(ev, initAudio, { once: true, passive: true });
+});
+
+// ============================================================
+// WAKE LOCK (pantalla no se apaga durante entreno)
+// ============================================================
+async function requestWakeLock() {
+  if (!wakeLockEnabled) return;
+  try {
+    if ('wakeLock' in navigator) {
+      wakeLock = await navigator.wakeLock.request('screen');
+    }
+  } catch(e) {}
+}
+async function releaseWakeLock() {
+  try { if (wakeLock) { await wakeLock.release(); wakeLock = null; } } catch(e) {}
+}
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'visible' && wakeLockEnabled && timerRunning) {
+    requestWakeLock();
+  }
+});
+
+// ============================================================
+// VIBRATE
+// ============================================================
+function vibrate(pattern) {
+  if (navigator.vibrate) navigator.vibrate(pattern || [200, 100, 200]);
+}
+
+// ============================================================
+// RENDER: DAYS NAV
+// ============================================================
+function renderDaysNav() {
+  const nav = document.getElementById('days-nav');
+  nav.innerHTML = DAYS.map((d, i) => {
+    const isDone = completedDays.includes(i);
+    return `<div class="day-pill ${i===currentDay?'active':''} ${isDone?'done':''}" onclick="selectDay(${i})">${d.label.slice(0,3)}</div>`;
+  }).join('');
+}
+
+function selectDay(idx) {
+  currentDay = idx;
+  activeEx = null;
+  stopTimer();
+  renderDaysNav();
+  renderDayView();
+}
+
+// ============================================================
+// RENDER: DAY VIEW
+// ============================================================
+function renderDayView() {
+  const day = DAYS[currentDay];
+  const view = document.getElementById('day-view');
+  const dayKey = `day-${currentDay}`;
+  const doneExes = completedExercises[dayKey] || [];
+  const sunDone = (completedExercises[`${dayKey}-sun`] === true);
+
+  let html = `<div class="day-header">
+    <div class="day-label">${day.label}</div>
+    <div class="day-sub">${day.sub}</div>
+    <div class="block-badge ${day.badgeClass}">${day.badge}</div>
+  </div>`;
+
+  // SUN SALUTATION first (every day)
+  html += `<div class="section-title">CALENTAMIENTO</div>`;
+  const sunActive = (activeEx === 'sun');
+  html += `<div class="sun-card ${sunActive?'active-ex':''} ${sunDone?'completed-ex':''}" onclick="toggleSun()">
+    <div class="sun-top">
+      <div class="sun-icon">☀️</div>
+      <div class="ex-info">
+        <div class="ex-name">Saludo al Sol</div>
+        <div class="ex-meta">Despierta el cuerpo · Movilidad articular</div>
+        <div class="ex-sets">2 rondas · ~5 min</div>
+      </div>
+      <div class="ex-check ${sunDone?'done':''}">${sunDone?'✓':''}</div>
+    </div>`;
+  if (sunActive) {
+    html += `<div class="sun-poses">
+      ${SUN_POSES.map((p, i) => `<div class="pose-item"><div class="pose-num">${i+1}</div><div class="pose-svg">${p.svg}</div><div class="pose-txt">${p.text}</div></div>`).join('')}
+      <div style="padding-top:12px">
+        <button class="t-btn done-btn" onclick="event.stopPropagation();markSunDone()">✓ HECHO</button>
+      </div>
+    </div>`;
+  }
+  html += `</div>`;
+
+  // EXERCISES
+  if (currentDay === 6) {
+    html += `<div class="rest-screen">
+      <div class="rest-emoji">😴</div>
+      <div class="rest-title">DESCANSO ACTIVO</div>
+      <div class="rest-sub">Hoy solo el saludo al sol.<br>Y tu paseo por la montaña como cada día.<br>El descanso es parte del programa.</div>
+    </div>`;
+  } else {
+    html += `<div class="section-title">EJERCICIOS</div>`;
+    day.exercises.forEach((ex, i) => {
+      const isDone = doneExes.includes(i);
+      const isActive = activeEx === i;
+      const exData = EXERCISES[ex.name] || { icon: '💪', img: '', caption: '' };
+      const reps = progressedReps(ex.reps);
+      const duration = progressedDuration(ex.duration);
+      const setsLabel = reps !== null
+        ? `${ex.sets} × ${reps} reps${ex.note ? ' · ' + ex.note : ''}`
+        : `${ex.sets} × ${duration}s${ex.note ? ' · ' + ex.note : ''}`;
+
+      html += `<div class="ex-card ${isActive?'active-ex':''} ${isDone?'completed-ex':''}" onclick="toggleEx(${i})">
+        <div class="ex-top">
+          <div class="ex-icon-wrap">${exData.svg || ''}</div>
+          <div class="ex-info">
+            <div class="ex-name">${ex.name}</div>
+            <div class="ex-meta">${exData.caption}</div>
+            <div class="ex-sets">${setsLabel} · Descanso ${ex.rest}s</div>
+          </div>
+          <div class="ex-check ${isDone?'done':''}">${isDone?'✓':''}</div>
+        </div>`;
+
+      if (isActive) {
+        const setsDone = completedExercises[`${dayKey}-sets-${i}`] || 0;
+        const setsDots = Array.from({length: ex.sets}, (_, s) =>
+          `<div class="set-dot ${s<setsDone?'done':s===setsDone?'active':''}">${s+1}</div>`
+        ).join('');
+
+        if (exData.svg) {
+          html += `<div class="ex-image-big">${exData.svg}</div>
+          <div class="ex-image-caption">📌 ${exData.caption}</div>`;
+        }
+
+        const isTimed = !reps && duration;
+        const stateLabel = timerMode === 'rest' ? 'DESCANSO' : (isTimed ? 'MANTÉN' : 'HAZ TUS REPS');
+
+        html += `<div class="timer-panel">
+          <div class="set-tracker">${setsDots}</div>
+          <div class="timer-state ${timerMode==='rest'?'rest':''}" id="timer-state-${i}">${stateLabel}</div>
+          <div class="timer-ring-wrap">
+            <svg class="timer-svg" width="110" height="110" viewBox="0 0 110 110">
+              <circle class="timer-track" cx="55" cy="55" r="46"/>
+              <circle class="timer-bar ${timerMode==='rest'?'rest-color':''}" id="timer-bar-${i}" cx="55" cy="55" r="46"
+                stroke-dasharray="${2*Math.PI*46}" stroke-dashoffset="0"/>
+            </svg>
+            <div class="timer-center">
+              <div class="timer-num" id="timer-num-${i}">${timerSeconds || (isTimed ? duration : ex.rest)}</div>
+              <div class="timer-lbl">SEG</div>
+            </div>
+          </div>`;
+
+        if (isTimed && timerMode !== 'rest') {
+          html += `<div class="timer-btns" style="margin-bottom:10px">
+            <button class="t-btn start" id="tbtn-start-${i}" onclick="event.stopPropagation();startWorkTimer(${i},${duration})">▶ INICIAR</button>
+            <button class="t-btn reset" onclick="event.stopPropagation();resetTimer(${i},${duration})">↺</button>
+          </div>`;
+        } else if (timerMode === 'rest') {
+          html += `<div class="timer-btns" style="margin-bottom:10px">
+            <button class="t-btn reset" onclick="event.stopPropagation();skipRest(${i})">⏭ SALTAR DESCANSO</button>
+          </div>`;
+        }
+
+        html += `<button class="t-btn done-btn" onclick="event.stopPropagation();markSetDone(${i},${ex.sets},${ex.rest})">✓ SERIE HECHA</button>
+        </div>`;
+      }
+
+      html += `</div>`;
+    });
+
+    const allDone = day.exercises.every((_, i) => (completedExercises[dayKey] || []).includes(i));
+    if (allDone && sunDone && day.exercises.length > 0) {
+      const totalSets = day.exercises.reduce((s, e) => s + e.sets, 0);
+      html += `<div class="complete-banner">
+        <h2>🎉 DÍA COMPLETADO</h2>
+        <div class="complete-stats">
+          <div class="complete-stat">
+            <div class="complete-stat-num">${day.exercises.length}</div>
+            <div class="complete-stat-lbl">EJERCICIOS</div>
+          </div>
+          <div class="complete-stat">
+            <div class="complete-stat-num">${totalSets}</div>
+            <div class="complete-stat-lbl">SERIES</div>
+          </div>
+          <div class="complete-stat">
+            <div class="complete-stat-num">🔥${streak}</div>
+            <div class="complete-stat-lbl">RACHA</div>
+          </div>
+        </div>
+        <div style="margin-top:12px;font-size:0.85rem;opacity:0.9">Ahora: 30 min andando por la montaña</div>
+      </div>`;
+    }
+  }
+
+  view.innerHTML = html;
+  document.getElementById('streak-num').textContent = streak;
+  document.getElementById('week-num').textContent = getCurrentWeek();
+}
+
+// ============================================================
+// SUN SALUTATION CONTROL
+// ============================================================
+function toggleSun() {
+  stopTimer();
+  activeEx = activeEx === 'sun' ? null : 'sun';
+  renderDayView();
+}
+
+function markSunDone() {
+  const dayKey = `day-${currentDay}`;
+  completedExercises[`${dayKey}-sun`] = true;
+  activeEx = null;
+  setDoneSound();
+  vibrate([100]);
+  checkDayComplete();
+  save();
+  renderDayView();
+}
+
+// ============================================================
+// EXERCISE CONTROL
+// ============================================================
+function toggleEx(idx) {
+  stopTimer();
+  activeEx = activeEx === idx ? null : idx;
+  timerMode = 'work';
+  if (activeEx !== null && activeEx !== 'sun') {
+    const ex = DAYS[currentDay].exercises[idx];
+    const duration = progressedDuration(ex.duration);
+    timerTotal = duration || ex.rest;
+    timerSeconds = timerTotal;
+  }
+  renderDayView();
+}
+
+// ============================================================
+// TIMER: WORK (for timed exercises like plank)
+// ============================================================
+function startWorkTimer(exIdx, duration) {
+  if (timerRunning) {
+    clearInterval(timerInterval);
+    timerRunning = false;
+    const btn = document.getElementById(`tbtn-start-${exIdx}`);
+    if (btn) btn.textContent = '▶ CONTINUAR';
+    return;
+  }
+  if (timerSeconds <= 0) timerSeconds = duration;
+  timerTotal = duration;
+  timerRunning = true;
+  timerMode = 'work';
+  requestWakeLock();
+  const btn = document.getElementById(`tbtn-start-${exIdx}`);
+  if (btn) btn.textContent = '⏸ PAUSAR';
+  timerInterval = setInterval(() => {
+    timerSeconds--;
+    updateTimerDisplay(exIdx, timerSeconds);
+    if (timerSeconds <= 0) {
+      clearInterval(timerInterval);
+      timerRunning = false;
+      timerEndSound();
+      vibrate([200, 100, 200]);
+      const btn2 = document.getElementById(`tbtn-start-${exIdx}`);
+      if (btn2) btn2.textContent = '▶ INICIAR';
+    }
+  }, 1000);
+}
+
+// ============================================================
+// TIMER: REST (auto-starts after marking set done)
+// ============================================================
+function startRestTimer(exIdx, restDuration) {
+  stopTimer();
+  timerMode = 'rest';
+  timerSeconds = restDuration;
+  timerTotal = restDuration;
+  timerRunning = true;
+  requestWakeLock();
+  renderDayView(); // re-render to show rest state
+  timerInterval = setInterval(() => {
+    timerSeconds--;
+    updateTimerDisplay(exIdx, timerSeconds);
+    if (timerSeconds <= 0) {
+      clearInterval(timerInterval);
+      timerRunning = false;
+      timerMode = 'work';
+      timerEndSound();
+      vibrate([300, 100, 300]);
+      // Reset to work state for next set
+      const ex = DAYS[currentDay].exercises[exIdx];
+      const duration = progressedDuration(ex.duration);
+      timerSeconds = duration || 0;
+      timerTotal = duration || 0;
+      renderDayView();
+    }
+  }, 1000);
+}
+
+function skipRest(exIdx) {
+  stopTimer();
+  timerMode = 'work';
+  const ex = DAYS[currentDay].exercises[exIdx];
+  const duration = progressedDuration(ex.duration);
+  timerSeconds = duration || 0;
+  timerTotal = duration || 0;
+  renderDayView();
+}
+
+function stopTimer() {
+  clearInterval(timerInterval);
+  timerRunning = false;
+}
+
+function resetTimer(exIdx, duration) {
+  stopTimer();
+  timerSeconds = duration;
+  timerTotal = duration;
+  timerMode = 'work';
+  updateTimerDisplay(exIdx, duration);
+  const btn = document.getElementById(`tbtn-start-${exIdx}`);
+  if (btn) btn.textContent = '▶ INICIAR';
+}
+
+function updateTimerDisplay(exIdx, secs) {
+  const num = document.getElementById(`timer-num-${exIdx}`);
+  const bar = document.getElementById(`timer-bar-${exIdx}`);
+  if (num) num.textContent = secs > 0 ? secs : '0';
+  if (bar) {
+    const circ = 2 * Math.PI * 46;
+    const ratio = timerTotal > 0 ? secs / timerTotal : 1;
+    bar.style.strokeDashoffset = circ * (1 - ratio);
+  }
+}
+
+// ============================================================
+// MARK SET DONE
+// ============================================================
+function markSetDone(exIdx, totalSets, restDuration) {
+  const dayKey = `day-${currentDay}`;
+  const setsKey = `${dayKey}-sets-${exIdx}`;
+  let setsDone = completedExercises[setsKey] || 0;
+  setsDone++;
+  completedExercises[setsKey] = setsDone;
+  setDoneSound();
+  vibrate([100]);
+
+  if (setsDone >= totalSets) {
+    // Exercise complete
+    if (!completedExercises[dayKey]) completedExercises[dayKey] = [];
+    if (!completedExercises[dayKey].includes(exIdx)) completedExercises[dayKey].push(exIdx);
+    activeEx = null;
+    stopTimer();
+    checkDayComplete();
+  } else {
+    // Start rest timer automatically
+    save();
+    startRestTimer(exIdx, restDuration);
+    return;
+  }
+  save();
+  renderDayView();
+}
+
+function checkDayComplete() {
+  const dayKey = `day-${currentDay}`;
+  const day = DAYS[currentDay];
+  const sunDone = completedExercises[`${dayKey}-sun`] === true;
+  const allEx = day.exercises.every((_, i) => (completedExercises[dayKey] || []).includes(i));
+  if (sunDone && allEx) {
+    if (!completedDays.includes(currentDay)) {
+      completedDays.push(currentDay);
+      streak++;
+    }
+  }
+}
+
+// ============================================================
+// PROGRESS PAGE
+// ============================================================
+function renderProgress() {
+  document.getElementById('stat-done').textContent = completedDays.length;
+  document.getElementById('stat-min').textContent = completedDays.length * 15;
+  const totalEx = Object.keys(completedExercises)
+    .filter(k => !k.includes('sets') && !k.includes('sun') && Array.isArray(completedExercises[k]))
+    .reduce((a, k) => a + completedExercises[k].length, 0);
+  document.getElementById('stat-ex').textContent = totalEx;
+  document.getElementById('stat-week').textContent = getCurrentWeek();
+  const days = ['L','M','X','J','V','S','D'];
+  const today = (() => { let d = new Date().getDay(); return d===0?6:d-1; })();
+  document.getElementById('week-grid').innerHTML = days.map((d, i) => {
+    const isDone = completedDays.includes(i);
+    const isToday = i === today;
+    return `<div class="week-cell ${isDone?'done':''} ${isToday&&!isDone?'today':''}"><span class="wday">${d}</span>${isDone?'✓':''}</div>`;
+  }).join('');
+}
+
+// ============================================================
+// SETTINGS
+// ============================================================
+function cycleWeek() {
+  const cur = manualWeek === null ? getCurrentWeek() : manualWeek;
+  const next = cur >= 4 ? 1 : cur + 1;
+  manualWeek = next;
+  save();
+  updateSettings();
+  renderDayView();
+}
+
+function toggleWakeLock() {
+  wakeLockEnabled = !wakeLockEnabled;
+  if (!wakeLockEnabled) releaseWakeLock();
+  save();
+  updateSettings();
+}
+
+function toggleSound() {
+  soundEnabled = !soundEnabled;
+  if (soundEnabled) { initAudio(); beep(880, 0.1, 0.15); }
+  save();
+  updateSettings();
+}
+
+function resetDay() {
+  if (!confirm('¿Borrar el progreso de hoy?')) return;
+  const dayKey = `day-${currentDay}`;
+  delete completedExercises[dayKey];
+  delete completedExercises[`${dayKey}-sun`];
+  DAYS[currentDay].exercises.forEach((_, i) => delete completedExercises[`${dayKey}-sets-${i}`]);
+  completedDays = completedDays.filter(d => d !== currentDay);
+  save();
+  renderDayView();
+  renderDaysNav();
+  alert('Día reiniciado');
+}
+
+function resetAll() {
+  if (!confirm('¿Borrar TODO el progreso? Esto no se puede deshacer.')) return;
+  completedExercises = {};
+  completedDays = [];
+  streak = 0;
+  manualWeek = null;
+  firstUseDate = new Date().toISOString();
+  localStorage.setItem('firstUseDate', firstUseDate);
+  save();
+  renderDayView();
+  renderDaysNav();
+  updateSettings();
+  alert('Progreso borrado');
+}
+
+function updateSettings() {
+  document.getElementById('set-week').textContent = getCurrentWeek();
+  document.getElementById('wake-btn').textContent = wakeLockEnabled ? 'ON' : 'OFF';
+  document.getElementById('sound-btn').textContent = soundEnabled ? 'ON' : 'OFF';
+}
+
+// ============================================================
+// PAGE NAV
+// ============================================================
+function showPage(page) {
+  ['train','prog','tips','settings'].forEach(p => {
+    document.getElementById(`page-${p}`).classList.toggle('hidden', p!==page);
+    document.getElementById(`nav-${p}`).classList.toggle('active', p===page);
+  });
+  if (page === 'prog') renderProgress();
+  if (page === 'settings') updateSettings();
+}
+
+// ============================================================
+// INSTALL TIP (iOS Add to Home Screen)
+// ============================================================
+function showInstallTip() {
+  const dismissed = localStorage.getItem('installTipDismissed') === 'true';
+  const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+
+  if (dismissed || isStandalone || !isIOS) return;
+
+  const wrap = document.getElementById('install-tip-wrap');
+  wrap.innerHTML = `<div class="install-tip">
+    <button class="install-tip-close" onclick="dismissInstallTip()">✕</button>
+    <div class="install-tip-title">📲 Añadir a Pantalla de Inicio</div>
+    <div class="install-tip-text">
+      Para usar como app: pulsa <b>Compartir</b> (□↑) abajo en Safari, luego <b>"Añadir a pantalla de inicio"</b>. Te aparecerá un icono como cualquier app.
+    </div>
+  </div>`;
+}
+
+function dismissInstallTip() {
+  localStorage.setItem('installTipDismissed', 'true');
+  document.getElementById('install-tip-wrap').innerHTML = '';
+}
+
+// ============================================================
+// INIT
+// ============================================================
+setTimeout(() => {
+  const s = document.getElementById('splash');
+  if (s) { s.style.opacity = '0'; setTimeout(() => s.remove(), 500); }
+}, 1500);
+
+renderDaysNav();
+renderDayView();
+showInstallTip();
+</script>
+</body>
+</html>
