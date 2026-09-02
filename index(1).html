@@ -1,0 +1,996 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>Define</title>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Define">
+<meta name="theme-color" content="#EEF0EA">
+<link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxODAgMTgwIj48cmVjdCB3aWR0aD0iMTgwIiBoZWlnaHQ9IjE4MCIgcng9IjQwIiBmaWxsPSIjMGEwYTBmIi8+PHRleHQgeD0iOTAiIHk9IjEyMCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXdlaWdodD0iOTAwIiBmb250LXNpemU9IjcwIiBmaWxsPSIjZmY1YzM1Ij5EPC90ZXh0Pjwvc3ZnPg==">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600&family=Instrument+Sans:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#EEF0EA; --paper:#F7F8F4; --ink:#1B2A22; --ink2:#4A5A50; --mute:#7E8B82; --line:#D8DDD3;
+  --pine:#2F6B4F; --bruc:#9C5F8C; --ginesta:#E2B400; --terra:#9A5B2E; --alert:#B8412E; --ok:#2F6B4F;
+  --accent:var(--pine); --accent-soft:#2F6B4F1A;
+  --sat:env(safe-area-inset-top); --sab:env(safe-area-inset-bottom);
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;background:var(--bg);color:var(--ink);font-family:'Instrument Sans',system-ui,sans-serif;font-size:16px;line-height:1.45;overflow-x:hidden}
+button{font-family:inherit;color:inherit;border:none;background:none;cursor:pointer;font-size:inherit}
+button:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px solid var(--ginesta);outline-offset:2px}
+#app{max-width:480px;margin:0 auto;padding:var(--sat) 0 calc(92px + var(--sab))}
+
+.header{padding:18px 20px 4px;display:flex;justify-content:space-between;align-items:baseline}
+.brand{font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:1.55rem;letter-spacing:.5px;color:var(--ink)}
+.brand::after{content:"";display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--accent);margin-left:7px;vertical-align:2px}
+.hbtns{display:flex;gap:6px}
+.chip{border:1.5px solid var(--line);border-radius:999px;padding:5px 12px;font-size:.8rem;color:var(--ink2);font-weight:500;background:var(--paper)}
+.chip b{color:var(--ink);font-weight:600}
+
+.profiles{display:flex;gap:6px;padding:12px 20px 0}
+.prof{flex:1;background:transparent;border:1.5px solid var(--line);border-radius:14px;padding:10px 6px 9px;text-align:left;transition:border-color .15s,background .15s}
+.prof .pn{font-size:.95rem;font-weight:600;color:var(--ink)}
+.prof .ps{font-size:.74rem;color:var(--mute);margin-top:1px}
+.prof.on{border-color:var(--accent);background:var(--paper);box-shadow:inset 4px 0 0 var(--accent)}
+.goal{font-size:.82rem;color:var(--ink2);padding:8px 20px 0;line-height:1.4}
+
+.days{display:flex;gap:6px;padding:14px 20px 2px;overflow-x:auto;scrollbar-width:none}
+.days::-webkit-scrollbar{display:none}
+.day{flex-shrink:0;padding:8px 0;width:44px;text-align:center;border-radius:12px;background:transparent;font-size:.82rem;font-weight:600;color:var(--ink2);border:1.5px solid transparent}
+.day.on{background:var(--ink);color:var(--paper)}
+.day.ok{border-color:var(--ok);color:var(--ok)}
+.day.on.ok{background:var(--ok);border-color:var(--ok);color:#fff}
+
+.wrap{padding:6px 20px}
+.dh{margin:12px 0 16px}
+.dt{font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:2.1rem;line-height:1;letter-spacing:.2px;color:var(--ink)}
+.ds{color:var(--ink2);font-size:.92rem;margin-top:6px;line-height:1.45}
+.badge{display:inline-block;font-size:.78rem;font-weight:600;color:var(--accent);margin-bottom:8px}
+.badge::before{content:"";display:inline-block;width:8px;height:8px;border-radius:2px;background:var(--accent);margin-right:7px;vertical-align:1px}
+.badge.run{color:#245A8A}.badge.run::before{background:#245A8A}
+.badge.rest{color:var(--mute)}.badge.rest::before{background:var(--mute)}
+.badge.play{color:var(--terra)}.badge.play::before{background:var(--terra)}
+
+.sect{font-size:.8rem;font-weight:600;color:var(--mute);margin:22px 0 8px;padding-bottom:6px;border-bottom:1px solid var(--line)}
+
+.card{background:var(--paper);border-radius:16px;margin-bottom:10px;overflow:hidden;border:1.5px solid var(--line);transition:border-color .15s}
+.card.on{border-color:var(--accent)}
+.card.ok{border-color:var(--ok);background:transparent}
+.card.ok .cname{color:var(--ink2);text-decoration:line-through;text-decoration-color:var(--ok);text-decoration-thickness:1.5px}
+.ctop{display:flex;align-items:center;gap:13px;padding:12px 12px 12px 12px}
+.art{width:92px;height:72px;border-radius:10px;flex-shrink:0;background:var(--bg);display:flex;align-items:center;justify-content:center;overflow:hidden;color:var(--accent)}
+.art svg{width:100%;height:100%}
+.art img{width:100%;height:100%;object-fit:cover}
+.cinfo{flex:1;min-width:0}
+.cname{font-weight:600;font-size:1rem;line-height:1.25;color:var(--ink)}
+.cset{font-size:.9rem;color:var(--ink2);margin-top:3px}
+.cset b,.cnote b{color:var(--ink)}
+.cnote{font-size:.8rem;color:var(--mute);margin-top:3px;line-height:1.4}
+.tick{width:30px;height:30px;border-radius:50%;border:1.5px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0;color:var(--mute)}
+.tick.ok{background:var(--ok);border-color:var(--ok);color:#fff}
+
+.body{padding:0 14px 14px;border-top:1px solid var(--line);padding-top:12px}
+.artbig{width:100%;height:190px;background:var(--bg);border-radius:12px;margin-bottom:12px;color:var(--accent);display:flex;align-items:center;justify-content:center}
+.artbig svg{width:100%;height:100%}
+.artbig img{width:100%;height:100%;object-fit:contain}
+.pA{animation:fa 2.8s infinite}.pB{animation:fb 2.8s infinite}
+@keyframes fa{0%,42%{opacity:1}50%,92%{opacity:0}100%{opacity:1}}
+@keyframes fb{0%,42%{opacity:0}50%,92%{opacity:1}100%{opacity:0}}
+@media(prefers-reduced-motion:reduce){.pA,.pB{animation:none}.pA{opacity:.3}}
+.cues{list-style:none;font-size:.92rem;line-height:1.5}
+.cues li{padding-left:16px;position:relative;margin-bottom:6px;color:var(--ink)}
+.cues li::before{content:"";position:absolute;left:0;top:.6em;width:6px;height:6px;border-radius:50%;background:var(--accent)}
+.warn{background:#B8412E12;border-left:3px solid var(--alert);padding:10px 12px;font-size:.88rem;color:#7A2A1C;margin-top:10px;line-height:1.5;border-radius:0 10px 10px 0}
+.acts{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+.btn{background:var(--paper);border:1.5px solid var(--line);border-radius:999px;padding:10px 16px;font-size:.9rem;font-weight:600;color:var(--ink);transition:background .12s}
+.btn:active{background:var(--bg)}
+.btn.pri{background:var(--ink);border-color:var(--ink);color:var(--paper)}
+.btn.wide{flex:1;text-align:center}
+
+.timer{background:var(--bg);border-radius:12px;padding:14px;margin-top:12px;text-align:center}
+.tnum{font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:3.4rem;line-height:1;color:var(--ink);font-variant-numeric:tabular-nums}
+.tlab{font-size:.82rem;color:var(--mute);margin-bottom:4px}
+.tbar{height:6px;background:var(--line);border-radius:3px;margin-top:10px;overflow:hidden}
+.tfill{height:100%;background:var(--accent);width:0%;transition:width .95s linear}
+.tfill.rest{background:#245A8A}
+.sets{display:flex;gap:6px;justify-content:center;margin-top:12px}
+.dot{width:30px;height:30px;border-radius:50%;background:var(--bg);border:1.5px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:600;color:var(--mute)}
+.dot.ok{background:var(--ok);border-color:var(--ok);color:#fff}
+
+.run{background:var(--ginesta);color:#2A2200;border-radius:20px;padding:18px 18px 16px;margin-bottom:12px}
+.run .btn{background:#2A2200;border-color:#2A2200;color:var(--ginesta)}
+.run .btn.pri{background:#2A2200;border-color:#2A2200;color:var(--ginesta)}
+.run .badge{color:#2A2200}.run .badge::before{background:#2A2200}
+.run.kid{background:var(--paper);color:var(--ink);border:1.5px solid var(--line)}
+.run.kid .btn{background:var(--paper);border-color:var(--line);color:var(--ink)}
+.run.kid .btn.pri{background:var(--ink);border-color:var(--ink);color:var(--paper)}
+.rk{font-size:.82rem;font-weight:600;opacity:.75}
+.rt{font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:1.7rem;line-height:1.05;margin-top:2px}
+.rplan{display:flex;gap:8px;margin:14px 0 6px}
+.rp{background:#00000012;border-radius:12px;padding:10px 12px;flex:1;min-width:0}
+.rp .k{font-size:.74rem;font-weight:600;opacity:.7}
+.rp .v{font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:1.6rem;line-height:1;margin-top:4px;font-variant-numeric:tabular-nums}
+.rstate{text-align:center;padding:16px 0 6px}
+.rphase{font-size:.9rem;font-weight:600;opacity:.75}
+.rbig{font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:5.2rem;line-height:1;font-variant-numeric:tabular-nums;color:#2A2200}
+.rbig.walk{color:#2A2200;opacity:.55}.rbig.run{color:#2A2200}
+.rrounds{font-size:.9rem;margin-top:6px;opacity:.8}
+
+.grid{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;margin-top:10px}
+.gc{aspect-ratio:1;border-radius:6px;background:var(--paper);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:.72rem;color:var(--mute)}
+.gc.f{background:var(--accent);border-color:var(--accent)}
+.gc.r{background:#245A8A;border-color:#245A8A}
+.gc.p{background:var(--terra);border-color:var(--terra)}
+.stats{display:flex;gap:8px;margin:12px 0}
+.st{flex:1;background:var(--paper);border:1.5px solid var(--line);border-radius:14px;padding:12px 10px;text-align:center}
+.st .v{font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:2rem;line-height:1;font-variant-numeric:tabular-nums}
+.st .k{font-size:.74rem;color:var(--mute);margin-top:4px}
+
+.nav{position:fixed;bottom:0;left:0;right:0;background:var(--paper);border-top:1.5px solid var(--line);display:flex;padding:8px 0 calc(8px + var(--sab));z-index:20}
+.nb{flex:1;text-align:center;font-size:.76rem;color:var(--mute);font-weight:600}
+.nb .i{display:block;font-size:1.1rem;margin-bottom:2px;line-height:1}
+.nb.on{color:var(--ink)}
+.nb.on .i{color:var(--accent)}
+.tip{background:var(--paper);border:1.5px solid var(--line);border-left:4px solid var(--accent);border-radius:0 12px 12px 0;padding:11px 14px;font-size:.9rem;line-height:1.55;color:var(--ink);margin-bottom:10px}
+.tip b{color:var(--ink);font-weight:600}
+input.url,textarea.url{width:100%;background:var(--bg);border:1.5px solid var(--line);border-radius:10px;padding:10px 12px;color:var(--ink);font-size:.9rem;margin-top:10px;font-family:inherit}
+.hide{display:none}
+</style>
+</head>
+<body>
+<div id="app">
+  <div class="header">
+    <div class="brand">Define</div>
+    <div class="hbtns">
+      <button class="chip" onclick="cycleBlock()">Bloc <b id="blk">1</b></button>
+      <button class="chip" onclick="toggleSound()"><span id="snd">So</span></button>
+    </div>
+  </div>
+  <div class="profiles" id="profiles"></div>
+  <div class="goal" id="goal"></div>
+  <div id="days" class="days"></div>
+  <div id="view" class="wrap"></div>
+</div>
+<div class="nav">
+  <button class="nb on" id="nb-avui" onclick="go('avui')"><span class="i">●</span>Avui</button>
+  <button class="nb" id="nb-familia" onclick="go('familia')"><span class="i">⁂</span>Família</button>
+  <button class="nb" id="nb-setmana" onclick="go('setmana')"><span class="i">▤</span>Setmana</button>
+  <button class="nb" id="nb-registre" onclick="go('registre')"><span class="i">✓</span>Registre</button>
+  <button class="nb" id="nb-guia" onclick="go('guia')"><span class="i">?</span>Guia</button>
+</div>
+<script>
+const F='var(--accent)', O='#9AA39B', J='#00000040';
+function joints(d,w){
+  let out='', re=/([ML])\s*(-?[\d.]+)[ ,]+(-?[\d.]+)/g, m, pts=[];
+  while((m=re.exec(d))) pts.push([m[2],m[3]]);
+  pts.forEach(pt=>{ out+=`<circle cx='${pt[0]}' cy='${pt[1]}' r='${(w*0.42).toFixed(1)}' fill='${J}'/>`; });
+  return out;
+}
+function pose(a,col,op){
+  let s='';
+  (a.o||[]).forEach(o=>{
+    if(o[0]==='r') s+=`<rect x='${o[1]}' y='${o[2]}' width='${o[3]}' height='${o[4]}' rx='7' fill='${O}'/>`;
+    if(o[0]==='e') s+=`<ellipse cx='${o[1]}' cy='${o[2]}' rx='${o[3]}' ry='${o[4]}' fill='${O}'/>`;
+    if(o[0]==='l') s+=`<path d='${o[1]}' fill='none' stroke='${O}' stroke-width='${o[2]}' stroke-linecap='round'/>`;
+  });
+  (a.s||[]).forEach(pp=>{
+    const w=pp[1]*1.3;
+    s+=`<path d='${pp[0]}' fill='none' stroke='${col}' stroke-width='${w.toFixed(1)}' stroke-linecap='round' stroke-linejoin='round' opacity='${op}'/>`;
+  });
+  (a.s||[]).forEach(pp=>{ s+=`<g opacity='${op}'>`+joints(pp[0],pp[1]*1.3)+`</g>`; });
+  if(a.h) s+=`<circle cx='${a.h[0]}' cy='${a.h[1]}' r='${a.h[2]+1.5}' fill='${col}' opacity='${op}'/>`;
+  (a.d||[]).forEach(d=>{ s+=`<path d='${d}' fill='none' stroke='${O}' stroke-width='2.2' stroke-dasharray='6 5' stroke-linecap='round' opacity='${op}'/>`; });
+  return s;
+}
+function art(a,big){
+  let s="<svg viewBox='0 0 200 140' xmlns='http://www.w3.org/2000/svg'>";
+  if(a.f!==false){ s+="<line x1='8' y1='126' x2='192' y2='126' stroke='#4a4a58' stroke-width='2.5' stroke-linecap='round'/>";
+    s+="<ellipse cx='100' cy='131' rx='72' ry='3' fill='#00000055'/>"; }
+  const g=a.g?Object.assign({},a,a.g):null;
+  if(big&&g){
+    s+=`<g class="pA">`+pose(g,F,1)+`<text x='100' y='16' text-anchor='middle' fill='#7E8B82' font-family='Instrument Sans' font-size='11' font-weight='600'>Inici</text></g>`;
+    s+=`<g class="pB">`+pose(a,F,1)+`<text x='100' y='16' text-anchor='middle' fill='#7E8B82' font-family='Instrument Sans' font-size='11' font-weight='600'>Final</text></g>`;
+  } else {
+    if(g) s+=pose(g,'#C5CBC2',1);
+    s+=pose(a,F,1);
+  }
+  return s+"</svg>";
+}
+const EX={
+ flexinc:{n:"Flexions inclinades",yt:"incline push up form",
+  a:{g:{o:[['r',138,88,50,37]],s:[['M 26 118 L 78 96 L 132 72',14],['M 132 74 L 145 88',9],['M 26 118 L 15 122',8]],h:[143,60,10]},o:[['r',138,88,50,37]],s:[['M 26 120 L 78 100 L 132 80',14],['M 132 82 L 146 94',9],['M 26 120 L 15 124',8]],h:[142,68,10]},
+  c:["Mans a una roca o tronc a l'altura de la cintura.","Cos recte de talons a cap, glutis apretats.","Baixa en 2 segons, colzes a 45 graus del cos.","Com més baixa la roca, més difícil."]},
+ pressp:{n:"Press d'espatlla amb pedra",yt:"overhead press stone form",
+  a:{g:{o:[['e',100,66,20,9]],s:[['M 92 124 L 94 88',13],['M 108 124 L 106 88',13],['M 100 90 L 100 56',16],['M 100 60 L 86 74',9],['M 100 60 L 114 74',9]],h:[100,44,9]},o:[['e',100,22,20,9]],s:[['M 92 124 L 94 88',13],['M 108 124 L 106 88',13],['M 100 90 L 100 56',16],['M 100 58 L 86 34',9],['M 100 58 L 114 34',9]],h:[100,45,9]},
+  c:["Pedra al pit amb les dues mans.","Empeny amunt fins a estirar els braços.","Abdomen apretat, no arquegis l'esquena.","Baixa controlat fins al pit."]},
+ planfront:{n:"Planxa frontal",yt:"forearm plank correct form",
+  a:{s:[['M 24 118 L 80 96 L 136 84',15],['M 136 86 L 138 116',9],['M 120 121 L 156 121',9]],h:[148,74,10]},
+  c:["Recolzat als avantbraços, colzes sota les espatlles.","Línia recta de talons a cap.","Glutis i abdomen apretats, malucs ni amunt ni avall.","Respira normal, no aguantis l'aire."]},
+ plateral:{n:"Planxa lateral",yt:"side plank proper form",
+  a:{s:[['M 28 121 L 150 58',15],['M 96 92 L 72 121',9],['M 104 84 L 118 40',8]],h:[158,50,10]},
+  c:["Recolzat en un colze i el cantell del peu.","Maluc ben amunt, cos en línia recta.","Fes els dos costats.","Versió fàcil: recolza els genolls."]},
+ birddog:{n:"Bird-dog",yt:"bird dog exercise form",
+  a:{s:[['M 70 92 L 130 92',15],['M 128 94 L 133 122',9],['M 72 94 L 66 122',11],['M 128 89 L 168 76',8],['M 70 89 L 30 77',10]],h:[150,84,9]},
+  c:["A quatre grapes, mans sota espatlles i genolls sota malucs.","Estira alhora braç i cama CONTRARIS.","El maluc no ha de balancejar-se.","Aguanta 2 segons a dalt i canvia."]},
+ sentparc:{n:"Sentadilla parcial",yt:"partial squat bodyweight form",
+  a:{s:[['M 96 124 L 110 96',13],['M 110 96 L 100 70',14],['M 100 72 L 104 46',16],['M 104 50 L 134 58',8]],h:[104,34,10]},
+  c:["Baixa només fins a mitja flexió, uns 60 graus.","Pes als talons, genolls seguint la punta del peu.","Pit alt, esquena recta.","Si el genoll fa mal, escurça el recorregut."]},
+ stepup:{n:"Pujada a tronc",yt:"step up exercise proper form",
+  a:{g:{o:[['r',122,100,58,25]],s:[['M 140 100 L 132 82',13],['M 132 82 L 118 76',14],['M 118 76 L 116 50',16],['M 106 124 L 114 88',12],['M 116 54 L 134 66',8]],h:[116,38,10]},o:[['r',122,100,58,25]],s:[['M 138 100 L 128 80',13],['M 128 80 L 108 70',14],['M 108 70 L 111 46',16],['M 96 124 L 105 84',12],['M 111 50 L 131 62',8]],h:[111,34,10]},
+  c:["El tronc mai més alt que el teu genoll.","Puja empenyent amb la cama de dalt, no amb impuls.","Baixa MOLT controlat: aquí és on protegeixes el genoll.","Totes les repeticions d'una cama, després canvia."]},
+ bridge:{n:"Pont de glutis a una cama",yt:"single leg glute bridge form",
+  a:{g:{s:[['M 42 118 L 100 116',16],['M 100 116 L 124 114',13],['M 124 114 L 129 124',11],['M 98 119 L 152 112',11]],h:[32,116,10]},s:[['M 42 116 L 98 96',16],['M 98 96 L 124 108',13],['M 124 108 L 129 124',11],['M 98 93 L 152 82',11]],h:[32,114,10]},
+  c:["De panxa amunt, un peu al terra i l'altra cama estirada.","Empeny amb el taló i puja el maluc.","Línia recta espatlla-maluc-genoll.","Si ho notes als isquiotibials, acosta el peu al cul."]},
+ bridge2:{n:"Pont de glutis",yt:"glute bridge exercise form",
+  a:{g:{s:[['M 42 118 L 100 116',16],['M 100 116 L 122 112',13],['M 122 112 L 129 124',11],['M 98 119 L 120 118',12]],h:[32,116,10]},s:[['M 42 116 L 98 96',16],['M 98 96 L 124 108',13],['M 124 108 L 129 124',11],['M 96 99 L 120 112',12]],h:[32,114,10]},
+  c:["Peus a l'amplada del maluc, talons a prop del cul.","Puja desenrotllant la columna, una vèrtebra cada cop.","Costelles avall: no arquegis les lumbars.","Baixa igual de lent, apilant vèrtebres fins al terra."]},
+ rdl:{n:"Pes mort romanès",yt:"romanian deadlift hip hinge form",
+  a:{g:{o:[['e',104,102,14,7]],s:[['M 96 124 L 98 92',13],['M 98 92 L 100 58',16],['M 100 62 L 103 96',9]],h:[100,46,10]},o:[['e',146,108,14,7]],s:[['M 92 124 L 96 92',13],['M 96 92 L 140 74',16],['M 139 77 L 145 101',9]],h:[150,66,10]},
+  c:["Genolls una mica doblegats i FIXOS: no és una sentadilla.","Envia el maluc enrere, com tancant un calaix amb el cul.","Esquena plana, la pedra baixa fregant les cames.","Para quan notis l'estirada darrere la cuixa."]},
+ remo:{n:"Rem amb pedra",yt:"single arm dumbbell row form",
+  a:{g:{o:[['r',150,96,38,29],['e',124,120,12,6]],s:[['M 84 124 L 88 88',13],['M 88 88 L 142 74',16],['M 142 77 L 158 96',9],['M 136 79 L 126 114',9]],h:[152,64,10]},o:[['r',150,96,38,29],['e',122,109,12,6]],s:[['M 84 124 L 88 88',13],['M 88 88 L 142 74',16],['M 142 77 L 158 96',9],['M 136 79 L 126 101',9]],h:[152,64,10]},
+  c:["Una mà recolzada al tronc, esquena plana i paral·lela al terra.","Tira la pedra cap al maluc apretant l'omòplat.","El colze frega el cos, no s'obre.","Baixa lent fins a estirar el braç."]},
+ hang:{n:"Penjar-se d'una branca",yt:"dead hang exercise beginner",
+  a:{o:[['l','M 24 22 L 176 22',9]],s:[['M 84 26 L 96 60',9],['M 116 26 L 104 60',9],['M 100 62 L 100 100',16],['M 100 100 L 92 124',12],['M 100 100 L 110 124',12]],h:[100,50,9]},
+  c:["Branca gruixuda i segura, peus poden tocar a terra.","Espatlles actives: no et quedis penjat mort del tot.","Comença amb 10-15 segons i ves pujant.","Excel·lent per descarregar l'esquena."]},
+ calf:{n:"Elevació de talons",yt:"standing calf raise form",
+  a:{g:{s:[['M 92 124 L 92 90',13],['M 108 124 L 108 90',13],['M 100 92 L 100 58',16]],h:[100,48,10]},s:[['M 92 118 L 92 84',13],['M 108 118 L 108 84',13],['M 100 86 L 100 52',16],['M 88 120 L 84 124',7],['M 112 120 L 116 124',7]],h:[100,42,10]},
+  c:["De peu, puja fins a la punta dels peus.","Aguanta un segon a dalt.","Baixa lent, notant l'estirada del bessó.","A la baixada de Parpers ho agrairàs."]},
+ goblet:{n:"Sentadilla amb pedra al pit",yt:"goblet squat form beginner",
+  a:{g:{s:[['M 92 124 L 95 94',13],['M 108 124 L 105 94',13],['M 100 94 L 103 58',16],['M 103 62 L 92 74',8],['M 103 62 L 114 74',8]],h:[103,46,10],o:[['e',103,78,14,8]]},o:[['e',102,82,14,8]],s:[['M 90 124 L 100 98',13],['M 110 124 L 102 98',13],['M 100 98 L 103 62',16],['M 103 66 L 90 78',8],['M 103 66 L 116 78',8]],h:[103,50,10]},
+  c:["Pedra abraçada contra el pit: això et manté el tors dret.","Baixa fins on l'esquena es mantingui recta.","Genolls oberts en línia amb els peus.","Pedra petita: primer la tècnica."]},
+ farmer:{n:"Marxa del granger",yt:"farmers walk carry form",
+  a:{o:[['e',82,101,11,6],['e',118,101,11,6]],s:[['M 92 124 L 94 90',13],['M 110 124 L 106 90',13],['M 100 90 L 100 56',16],['M 88 60 L 84 93',8],['M 112 60 L 116 93',8]],h:[100,44,10]},
+  c:["Una pedra a cada mà, camina recte 20-30 passes.","Espatlles enrere, mirada al davant.","Abdomen apretat: aquí és on treballa l'esquena.","Si perds la postura, deixa les pedres."]},
+ clam:{n:"Obertura de maluc",yt:"clamshell exercise glute medius",
+  a:{s:[['M 42 110 L 110 106',16],['M 110 106 L 130 119',12],['M 110 103 L 136 88',12],['M 136 88 L 150 103',10]],h:[32,108,10]},
+  c:["Estirada de costat, genolls doblegats un sobre l'altre.","Obre el genoll de dalt sense girar el maluc.","Ho has de notar al lateral del cul, no a la lumbar.","Lent: puja en 2 segons, baixa en 2."]},
+ catcamel:{n:"Gat-camell",yt:"cat camel spine mobility",
+  a:{s:[['M 66 92 Q 100 74 134 92',15],['M 132 95 L 137 122',10],['M 68 95 L 63 122',11]],h:[150,99,9]},
+  c:["A quatre grapes, arrodoneix i arqueja l'esquena a poc a poc.","Sense forçar cap extrem, és mobilitat no estirament.","Respira: exhala arrodonint, inspira arquejant.","Ideal per començar el matí amb lumbars carregades."]},
+ planknees:{n:"Planxa amb genolls",yt:"knee plank modified form",
+  a:{s:[['M 46 120 L 78 106 L 130 88',15],['M 130 90 L 134 118',9],['M 116 121 L 152 121',9]],h:[146,78,10]},
+  c:["Genolls al terra, avantbraços recolzats.","Línia recta de genolls a cap.","Costelles avall, sense arquejar lumbars.","Quan aguantis 45 segons, passa a la planxa completa."]},
+ frog:{n:"Salt de granota",yt:"frog jump kids exercise",
+  a:{s:[['M 68 124 L 84 104',12],['M 84 104 L 98 92',12],['M 98 92 L 110 76',14],['M 110 78 L 136 70',8]],h:[112,64,10],d:['M 130 46 Q 155 30 178 50']},
+  c:["Ajupit com una granota, mans a terra.","Salta endavant tan lluny com puguis.","Cau amb els genolls tous, sense fer soroll.","Qui arriba més lluny en 5 salts?"]},
+ bear:{n:"Camina d'ós",yt:"bear crawl kids exercise",
+  a:{s:[['M 70 70 L 130 82',15],['M 70 73 L 56 122',12],['M 130 85 L 148 122',10]],h:[148,74,9]},
+  c:["Mans i peus a terra, genolls a un pam del terra.","Camina endavant movent mà i peu contraris.","Cul amunt, esquena plana.","10 metres i tornar."]},
+ crab:{n:"Camina de cranc",yt:"crab walk kids exercise",
+  a:{s:[['M 62 96 L 130 96',15],['M 62 98 L 48 122',10],['M 130 98 L 147 122',12]],h:[52,88,9]},
+  c:["Panxa amunt, mans i peus a terra.","Aixeca el cul i camina cap enrere.","Molt bo per a espatlles i tríceps.","Fes-ho a l'herba, no sobre pedres."]},
+ balance:{n:"Equilibri sobre tronc",yt:"balance beam log kids",
+  a:{o:[['r',36,112,128,13]],s:[['M 100 112 L 100 64',16],['M 100 68 L 70 60',8],['M 100 68 L 130 60',8]],h:[100,52,10]},
+  c:["Tronc caigut o vora de pedra, baix i estable.","Travessa amb els braços oberts.","Nivell 2: caminar cap enrere.","Nivell 3: aturar-se a peu coix al mig."]},
+ hop:{n:"Salts a peu coix",yt:"single leg hopping kids",
+  a:{s:[['M 96 118 L 98 92',13],['M 98 92 L 101 64',16],['M 98 95 L 117 101 L 113 84',11],['M 101 68 L 82 54',8],['M 101 68 L 120 54',8]],h:[101,52,10]},
+  c:["10 salts amb una cama i 10 amb l'altra.","Cau amb el genoll una mica doblegat.","Nivell 2: saltar entre pedres o marques.","Millora molt l'equilibri i el turmell."]},
+ sprint:{n:"Esprints curts",yt:"kids sprint running drill",
+  a:{s:[['M 68 122 L 92 100',12],['M 92 100 L 97 72',15],['M 96 100 L 119 112',12],['M 97 76 L 76 62',8],['M 97 76 L 120 68',8]],h:[101,60,10]},
+  c:["Marca una sortida i una arribada, uns 15 passes.","Correu els dos junts i tu fes el ximple pel camí.","6 a 8 curses, cap presa i sense cronòmetre.","Millor si és una pujadeta suau."]},
+ mocador:{n:"El mocador que vola",yt:"scarf tossing activity kids coordination",
+  a:{o:[['e',100,26,13,8]],s:[['M 92 124 L 92 92',13],['M 108 124 L 108 92',13],['M 100 94 L 100 62',16],['M 100 66 L 84 44',8],['M 100 66 L 116 44',8]],h:[100,52,10],d:['M 62 34 Q 100 6 138 34']},
+  c:["Un mocador o un drap: cau molt a poc a poc i dona temps de reaccionar.","Llança'l amunt i que l'agafi abans que toqui a terra.","Comença a l'altura del cap. Quan li surti, més amunt.","És l'exercici que millor treballa la coordinació ull-mà sense frustració."]},
+ diana:{n:"Punteria amb pinyes",yt:"target throwing game kids",
+  a:{o:[['e',150,116,26,9],['e',98,50,6,4]],s:[['M 56 124 L 58 92',13],['M 70 124 L 66 92',13],['M 62 94 L 66 62',16],['M 66 66 L 92 54',8]],h:[66,52,10],d:['M 100 46 Q 128 32 148 106']},
+  c:["Fes un cercle gran amb pedres i llanceu-hi pinyes des de MOLT a prop.","Ha d'encertar la majoria de tirs: si falla sempre, acosta la diana.","Quan encerti fàcil, un pas enrere. Mai dos.","Alterna la mà dreta i l'esquerra."]},
+ bombolles:{n:"Caça-bombolles",yt:"bubble popping game kids coordination",
+  a:{o:[['e',140,38,9,9],['e',163,60,6,6],['e',124,22,7,7]],s:[['M 92 124 L 92 92',13],['M 108 124 L 108 92',13],['M 100 94 L 100 62',16],['M 100 66 L 126 48',8]],h:[100,52,10]},
+  c:["Bombolles de sabó i esclatar-les amb un dit.","Es mouen lentes: és el millor entrenament d'ull-mà que hi ha.","Nivell 2: només amb la mà esquerra. Nivell 3: amb el colze o el genoll.","Funciona igual de bé al jardí que a la muntanya."]},
+ linia:{n:"La línia del funambulista",yt:"balance line walking kids",
+  a:{o:[['l','M 20 121 L 180 121',4]],s:[['M 96 121 L 98 92',13],['M 104 121 L 102 92',13],['M 100 94 L 100 62',16],['M 100 66 L 72 58',8],['M 100 66 L 128 58',8]],h:[100,52,10]},
+  c:["Una línia al terra amb un pal, o una vora de camí. TOT a nivell de terra.","Travessa-la amb els braços oberts, taló-punta.","Nivell 2: cap enrere. Nivell 3: portant una pedra al cap.","Res d'alçada: així no hi ha por i l'equilibri es treballa igual."]},
+ lava:{n:"El terra és lava",yt:"stepping stones game kids",
+  a:{o:[['e',48,121,18,7],['e',100,121,16,7],['e',152,121,18,7]],s:[['M 96 108 L 84 96',12],['M 84 96 L 96 76',14],['M 96 76 L 105 50',16],['M 105 54 L 127 44',8],['M 96 108 L 111 104',12]],h:[106,38,10],d:['M 58 68 Q 100 46 142 68']},
+  c:["Pedres planes a terra o marques amb pals: salta d'una a l'altra.","Totes a un pas de distància, res de salts llargs.","Tu ves davant fent el ridícul i ell et segueix.","Salt, equilibri i planificació del moviment alhora."]},
+ estatues:{n:"Estàtues",yt:"freeze dance statues game kids",
+  a:{s:[['M 96 124 L 98 92',13],['M 98 94 L 118 104 L 114 86',11],['M 98 94 L 100 60',16],['M 100 64 L 72 54',8],['M 100 64 L 128 54',8]],h:[100,50,10]},
+  c:["Correu i quan crides prou tothom es queda congelat.","Cada ronda una postura diferent: a peu coix, agenollat, amb un braç amunt.","Aguantar 5 segons sense moure's ja és l'exercici.","Riure's és part del joc: aquí no hi ha ningú que perdi."]},
+ creuat:{n:"Mà al genoll contrari",yt:"cross crawl exercise kids coordination",
+  a:{s:[['M 92 124 L 92 96',13],['M 92 96 L 112 84',13],['M 100 98 L 100 62',16],['M 100 66 L 112 84',8],['M 100 66 L 76 56',8]],h:[100,52,10]},
+  c:["Puja un genoll i toca'l amb la mà del braç CONTRARI. Alterna.","Lent i marcant el ritme amb la veu, no de pressa.","Nivell 2: tocar el taló per darrere. Nivell 3: amb els ulls tancats.","És dels millors exercicis per a la coordinació dels dos costats del cos."]},
+ tresor:{n:"Cerca del tresor",yt:"nature scavenger hunt kids",
+  a:{o:[['e',120,103,8,5]],s:[['M 74 124 L 88 104',12],['M 88 104 L 100 90',13],['M 100 90 L 112 66',16],['M 112 70 L 119 97',8]],h:[116,54,10]},
+  c:["Llista de 5 coses: una pinya, una fulla vermella, una pedra plana, una ploma, un pal amb forma de Y.","Camina 3 quilòmetres sense adonar-se'n perquè està buscant.","Ell decideix el camí. Tu només el segueixes.","Perfecte per al dissabte en família."]},
+ grimpar:{n:"Pujar el pendent a quatre grapes",yt:"kids crawling up hill nature",
+  a:{o:[['l','M 18 124 L 182 62',6]],s:[['M 58 108 L 92 91',14],['M 60 110 L 54 124',10],['M 92 91 L 110 82',10]],h:[114,76,9]},
+  c:["Un pendent d'herba o terra, gens de roca vertical.","Puja a quatre grapes fins a dalt i baixa caminant de costat.","Té l'aventura d'escalar sense l'alçada ni la por.","Si un dia no vol, no passa res: es camina i ja està."]},
+ pinyacami:{n:"Llança i ves-la a buscar",yt:"kids throwing running game outdoors",
+  a:{o:[['e',162,44,7,5]],s:[['M 68 122 L 92 100',12],['M 92 100 L 97 72',15],['M 96 100 L 119 112',12],['M 97 76 L 76 62',8],['M 97 76 L 122 66',8]],h:[101,60,10],d:['M 128 62 Q 152 32 174 58']},
+  c:["Llança una pinya cap endavant pel camí i corre a buscar-la.","Cada llançament l'avança 10 o 15 metres: avança amb vosaltres sense adonar-se'n.","Punteria, cursa i cap avorriment. Alterna les dues mans.","Repte: encertar dins d'un forat entre dos arbres."]},
+ futbolpinya:{n:"Futbol amb pinya",yt:"kids dribbling ball walking outdoors",
+  a:{o:[['e',130,120,9,6]],s:[['M 84 124 L 90 96',13],['M 110 118 L 100 96',13],['M 96 96 L 100 62',16],['M 100 66 L 78 58',8],['M 100 66 L 122 60',8]],h:[100,52,10],d:['M 142 116 Q 156 106 172 116']},
+  c:["Condueix una pinya o una pinya grossa amb el peu tot el camí.","Coordinació de peu i vista, i camina quilòmetres sense queixar-se.","Alterna peu dret i esquerre cada 20 passes.","Si es perd al bosc, se'n busca una altra i ja està."]},
+ obstacles:{n:"Circuit d'obstacles del camí",yt:"kids jumping over obstacles trail",
+  a:{o:[['l','M 120 121 L 152 121',6]],s:[['M 96 104 L 84 92',12],['M 84 92 L 98 74',14],['M 98 74 L 107 48',16],['M 107 52 L 129 42',8],['M 96 104 L 112 100',12]],h:[108,36,10],d:['M 58 62 Q 100 36 148 68']},
+  c:["El camí ja té els obstacles: arrels, pedres, bassals, pals caiguts.","Regla del joc: saltar-los tots sense trepitjar-ne cap.","Tu vas dient quin toca: salta, esquiva, passa per sobre.","Si no n'hi ha, poseu pals al terra cada pocs passos."]},
+ animalari:{n:"Animalari",yt:"animal walks kids exercise",
+  a:{s:[['M 84 124 L 92 104',12],['M 92 104 L 104 92',13],['M 104 92 L 108 66',15],['M 108 70 L 84 62',8],['M 108 70 L 132 62',8]],h:[109,54,10]},
+  c:["Ànec: ajupit del tot, mans als malucs, camina fent nyec-nyec.","Cangur: peus junts, salts endavant. Flamenc: 10 passes a peu coix.","Serp: arrossegat per l'herba. Gorila: camina picant-te el pit.","Cavall: galopa. Cranc i ós ja els sap. Tu fes-los TOTS amb ell."]},
+ flexions:{n:"Flexions",yt:"push up proper form",
+  a:{g:{s:[['M 26 118 L 84 100 L 138 88',15],['M 138 90 L 143 122',9],['M 26 118 L 15 122',8]],h:[152,80,10]},s:[['M 26 118 L 84 104 L 138 96',15],['M 138 98 L 132 112 L 148 124',9],['M 26 118 L 15 122',8]],h:[150,88,10]},
+  c:["Mans una mica més amples que les espatlles.","Colzes a 45 graus, no oberts en creu.","Baixa en 2 segons fins que el pit quasi toqui.","Si no en surten 8 netes, fes-les inclinades a una roca."]},
+ fondos:{n:"Fondos a la roca",yt:"triceps dips form",
+  a:{g:{o:[['r',130,86,54,39]],s:[['M 44 116 L 100 88',13],['M 100 88 L 124 62',15],['M 124 64 L 133 76 L 137 86',9]],h:[128,48,10]},o:[['r',130,86,54,39]],s:[['M 44 120 L 100 96',13],['M 100 96 L 122 70',15],['M 122 72 L 130 80 L 137 87',9]],h:[126,56,10]},
+  c:["Mans a la vora d'una roca plana, dits cap endavant.","Baixa doblegant els colzes cap enrere, no cap als costats.","Fins a 90 graus i puja empenyent.","Més fàcil: acosta els peus. Més difícil: allunya'ls."]},
+ reminv:{n:"Rem invertit a la branca",yt:"inverted row bar form",
+  a:{g:{o:[['l','M 56 44 L 178 44',9]],s:[['M 34 122 L 80 110 L 122 102',14],['M 122 100 L 124 50',9],['M 116 102 L 119 52',8],['M 34 122 L 23 125',8]],h:[134,96,10]},o:[['l','M 56 44 L 178 44',9]],s:[['M 34 122 L 76 104 L 112 88',14],['M 112 86 L 120 50',9],['M 106 90 L 114 52',8],['M 34 122 L 23 125',8]],h:[124,80,10]},
+  c:["Branca sòlida a l'altura del maluc, cos recte penjant per sota.","Tira fins que el pit toqui la branca, apretant els omòplats.","Com més horitzontal el cos, més difícil.","És el millor exercici d'esquena que pots fer sense material."]},
+ hipthrust:{n:"Empenta de maluc amb pedra",yt:"hip thrust bench form",
+  a:{g:{o:[['r',18,86,48,28],['e',110,96,17,8]],s:[['M 62 96 L 110 104',16],['M 110 104 L 130 108',13],['M 130 108 L 137 124',11]],h:[50,88,9]},o:[['r',18,86,48,28],['e',108,72,17,8]],s:[['M 62 92 L 108 80',16],['M 108 80 L 132 98',13],['M 132 98 L 137 124',11]],h:[50,84,9]},
+  c:["Espatlles recolzades en un tronc o roca, peus plans a terra.","Pedra sobre el maluc, subjecta amb les mans.","Puja fins que cuixa i tors quedin en línia. Aguanta 1 segon.","El millor exercici de glutis que pots fer amb pedres."]},
+ curl:{n:"Curl de bíceps amb pedra",yt:"biceps curl stone form",
+  a:{g:{s:[['M 92 124 L 92 88',13],['M 108 124 L 108 88',13],['M 100 90 L 100 56',16],['M 88 60 L 86 96',8],['M 112 60 L 114 96',8]],h:[100,44,10],o:[['e',100,102,14,7]]},o:[['e',100,64,14,7]],s:[['M 92 124 L 92 88',13],['M 108 124 L 108 88',13],['M 100 90 L 100 56',16],['M 88 60 L 86 84',8],['M 112 60 L 114 84',8],['M 86 84 L 95 68',7],['M 114 84 L 105 68',7]],h:[100,44,10]},
+  c:["Colzes enganxats al cos, no es mouen.","Puja la pedra doblegant NOMÉS el colze.","Baixa en 3 segons: la baixada és on creix el múscul.","No balancegis l'esquena per ajudar-te."]},
+ pike:{n:"Pike push-up",yt:"pike push up shoulders form",
+  a:{s:[['M 30 124 L 100 42',13],['M 100 42 L 158 122',10]],h:[116,76,9]},
+  c:["Cos en V invertida, cul ben amunt.","Baixa el cap entre les mans i empeny.","Treballa espatlla, el pas previ a les verticals.","Si costa massa, puja els peus menys."]},
+ deadbug:{n:"Dead bug",yt:"dead bug exercise pilates",
+  a:{s:[['M 44 108 L 122 108',16],['M 50 104 L 30 76',8],['M 118 104 L 154 90',11],['M 116 106 L 126 82',10],['M 126 82 L 146 80',9]],h:[36,106,9]},
+  c:["De panxa amunt, braços i genolls apuntant al sostre.","Estira alhora el braç i la cama CONTRARIS.","La lumbar no s'aixeca del terra en cap moment.","Expira mentre estires, inspira mentre tornes."]},
+ swim:{n:"Braços i cames alternats",yt:"pilates swimming exercise prone",
+  a:{s:[['M 30 106 L 160 100',16],['M 148 98 L 176 78',8],['M 40 104 L 20 86',10]],h:[170,96,9]},
+  c:["Al terra, de panxa avall, braços i cames allargades.","Aixeca només un pam el braç i la cama CONTRARIS, alternant.","Moviment petit i continu. En pilates se'n diu swimming, però es fa a terra.","Coll llarg i relaxat, mirant al terra. Sense arquejar les lumbars."]},
+ sidekick:{n:"Elevació lateral de cama",yt:"pilates side kick leg lift",
+  a:{g:{s:[['M 40 112 L 108 108',16],['M 108 108 L 148 117',12],['M 108 106 L 150 112',12],['M 48 106 L 40 88',8]],h:[30,110,10]},s:[['M 40 112 L 108 108',16],['M 108 108 L 148 117',12],['M 108 106 L 154 82',12],['M 48 106 L 40 88',8]],h:[30,110,10]},
+  c:["Estirada de costat, cos en línia recta i estable.","Puja la cama de dalt sense girar el maluc.","Puja en 2 temps, baixa en 2. Sense impuls.","El truc és que el tronc NO es mogui gens."]},
+ mermaid:{n:"Sirena",yt:"pilates mermaid side stretch",
+  a:{s:[['M 58 122 L 110 118',14],['M 108 118 L 117 78',15],['M 117 80 L 141 52',9],['M 112 92 L 88 108',8]],h:[123,66,10]},
+  c:["Asseguda amb les cames plegades a un costat.","Estira el braç per sobre del cap i inclina't al costat contrari.","Costelles tancades, sense enfonsar la cintura.","Respira dins l'estirament, 3 respiracions per costat."]},
+ rolldown:{n:"Desplegament de peu",yt:"pilates standing roll down",
+  a:{s:[['M 96 124 L 96 96',13],['M 108 124 L 106 96',13],['M 100 96 Q 110 70 130 62',15],['M 128 64 L 134 96',8]],h:[137,72,10]},
+  c:["De peu, baixa vèrtebra a vèrtebra com desenrotllant.","Genolls tous, cap i braços pesats.","Torna a pujar igual de lent, apilant vèrtebres.","Perfecte per començar el matí amb l'esquena carregada."]},
+ flexelev:{n:"Flexions amb peus elevats",yt:"decline push up form",
+  a:{o:[['r',14,96,48,30]],s:[['M 44 94 L 96 100 L 140 106',15],['M 140 108 L 134 118 L 150 124',9]],h:[152,98,10]},
+  c:["Peus sobre una roca o tronc, mans a terra.","Més pes al pit i espatlles: és l'esglaó després de les flexions normals.","Cos recte, no deixis caure el maluc.","Baixa en 3 segons, puja en 1."]},
+ sentuni:{n:"Sentadilla a una cama assistida",yt:"assisted single leg squat pole",
+  a:{o:[['r',150,20,16,106]],s:[['M 96 124 L 112 98',13],['M 112 98 L 100 74',14],['M 100 76 L 136 90',11],['M 100 74 L 104 46',16],['M 104 50 L 150 60',8]],h:[104,34,10]},
+  c:["Agafat a un arbre amb una mà, una cama endavant a l'aire.","Baixa amb l'altra fins on el genoll aguanti sense dolor.","L'arbre només és per equilibri, no per estirar-te.","El nivell més alt de cames sense pes: només quan la sentadilla amb pedra sigui fàcil."]},
+ plan3:{n:"Planxa a tres suports",yt:"plank arm reach form",
+  a:{s:[['M 24 118 L 80 96 L 136 84',15],['M 136 86 L 138 116',9],['M 120 121 L 156 121',9],['M 132 86 L 176 70',8]],h:[148,74,10]},
+  c:["Planxa i estira un braç endavant, aguanta 3 segons, canvia.","El maluc no ha de girar ni un mil·límetre: aquesta és la feina.","Si gira, torna a la planxa normal una setmana més.","Core antirotació, el que et protegeix corrent per terreny irregular."]},
+ domneg:{n:"Dominada negativa",yt:"negative pull up eccentric",
+  a:{o:[['l','M 24 30 L 176 30',9]],s:[['M 88 32 L 96 48',9],['M 112 32 L 104 48',9],['M 100 46 L 100 30',8],['M 100 50 L 100 94',16],['M 100 94 L 92 124',12],['M 100 94 L 110 124',12]],h:[100,20,9]},
+  c:["Puja d'un salt o des d'una pedra fins tenir la barbeta a la branca.","Baixa en 5 segons, tan lent com puguis.","Això construeix la primera dominada de veritat. Tres al mes ja és progrés.","Espatlles actives: no et deixis caure mort a baix."]},
+ rdl1:{n:"Pes mort romanès a una cama",yt:"single leg romanian deadlift form",
+  a:{o:[['e',58,104,13,7]],s:[['M 96 124 L 98 92',13],['M 98 92 L 100 78',14],['M 100 80 L 150 70',12],['M 100 78 L 60 64',16],['M 62 66 L 58 96',9]],h:[50,56,10]},
+  c:["Sobre una cama, l'altra s'estira enrere mentre el tors baixa.","Maluc, tors i cama enrere en una sola línia.","Pedra petita o res: aquí guanya l'equilibri, no el pes.","Glutis, isquios i el turmell que et sosté als camins."]},
+ stepdown:{n:"Baixada controlada del tronc",yt:"step down exercise knee eccentric",
+  a:{o:[['r',40,100,56,26]],s:[['M 80 100 L 84 80',13],['M 84 80 L 96 62',14],['M 96 64 L 112 84',13],['M 112 84 L 120 112',12],['M 96 62 L 100 34',16],['M 100 38 L 122 50',8]],h:[100,22,10]},
+  c:["Dret sobre el tronc amb una cama. Baixa l'altre peu fins a tocar terra, MOLT lent.","Torna a pujar. El genoll de la cama que treballa mira endavant, no cap endins.","3 segons de baixada. És l'exercici que enforteix el tendó del genoll.","Si fa mal sota la ròtula, tronc més baix."]},
+ sentesp:{n:"Sentadilla espanyola",yt:"spanish squat patellar tendon",
+  a:{o:[['r',160,20,16,106],['l','M 104 92 L 160 90',4]],s:[['M 100 124 L 102 92',13],['M 102 92 L 72 90',14],['M 72 90 L 70 56',16],['M 70 60 L 100 68',8]],h:[70,44,10]},
+  c:["Una tovallola o jaqueta lligada a l'arbre i passada per darrere dels genolls.","Asseu-te enrere amb les canyelles VERTICALS, el tors recte.","Aguanta el temps marcat o fes repeticions lentes.","Carrega el quàdriceps i descarrega la ròtula: el que un fisio et posaria pel genoll."]},
+ maleta:{n:"Marxa de la maleta",yt:"suitcase carry form",
+  a:{o:[['e',82,101,11,6]],s:[['M 92 124 L 94 90',13],['M 110 124 L 106 90',13],['M 100 90 L 100 56',16],['M 88 60 L 84 93',8],['M 112 60 L 116 80',8]],h:[100,44,10]},
+  c:["Una pedra en UNA sola mà, camina 20 passes ben recta.","El cos vol inclinar-se cap a la pedra: no ho permetis.","Canvia de mà i torna.","Treballa el costat de l'abdomen que estabilitza les lumbars caminant i corrent."]},
+ equilibri1:{n:"Equilibri a una cama",yt:"single leg balance exercise",
+  a:{s:[['M 96 124 L 98 92',13],['M 98 94 L 118 104 L 114 86',11],['M 98 94 L 100 60',16],['M 100 64 L 72 66',8],['M 100 64 L 128 66',8]],h:[100,50,10]},
+  c:["Sobre una cama, 30 segons. Sobre pinassa o terra irregular és millor.","Nivell 2: ulls tancats. Nivell 3: girant el cap a banda i banda.","Genoll una mica doblegat, mai bloquejat.","El turmell i el genoll aprenen a corregir sols. Menys torçades corrent."]},
+ turmell:{n:"Mobilitat de turmell",yt:"ankle mobility knee to wall",
+  a:{o:[['r',142,20,16,106]],s:[['M 60 124 L 76 100',12],['M 76 100 L 96 86',13],['M 116 124 L 130 96',12],['M 130 96 L 96 86',13],['M 96 86 L 92 54',16],['M 92 58 L 138 60',8]],h:[90,42,10]},
+  c:["Peu a un pam de l'arbre. Porta el genoll a tocar l'arbre sense aixecar el taló.","Si el taló s'aixeca, acosta el peu. Si arriba fàcil, allunya'l.","10 repeticions lentes per costat.","Turmells rígids carreguen genolls. Sobretot baixant."]},
+ resp90:{n:"Respiració 90/90",yt:"90 90 breathing exercise",
+  a:{o:[['r',118,94,56,32]],s:[['M 44 116 L 100 116',16],['M 100 114 L 112 88',13],['M 112 88 L 152 93',12]],h:[34,114,10]},
+  c:["Estirada, cames sobre un tronc o roca, genolls i malucs a 90 graus.","Mans a les costelles. Inspira pel nas 4 segons inflant els costats, no el pit.","Expira 6 segons per la boca, tancant les costelles i sentint l'abdomen baix.","8 respiracions. És el que apaga la tensió lumbar abans d'entrenar."]},
+ tibial:{n:"Elevació de puntes",yt:"tibialis raise exercise shin splints",
+  a:{o:[['r',36,20,16,106]],s:[['M 60 56 L 60 92',16],['M 60 92 L 92 120',13],['M 92 120 L 102 111',7]],h:[60,44,10]},
+  c:["Esquena recolzada a un arbre, peus un pas endavant, talons a terra.","Aixeca les puntes dels peus tot el que puguis. Aguanta 1 segon. Baixa lent.","15 a 20 repeticions. Ho notaràs davant de la canyella.","Frena les baixades i evita la periostitis: la lesió número u dels que comencen a córrer."]},
+ gambenrere:{n:"Gambada enrere",yt:"reverse lunge proper form",
+  a:{s:[['M 88 124 L 92 92',13],['M 92 92 L 100 74',14],['M 100 76 L 132 110',13],['M 132 110 L 156 120',11],['M 100 74 L 100 42',16],['M 100 46 L 84 70',8]],h:[100,30,10]},
+  c:["De peu, fes un pas ENRERE i baixa el genoll de darrere cap a terra.","La canyella de davant queda vertical: per això és més amable pel genoll que la gambada frontal.","Torna empenyent amb la cama de davant.","Tors dret. Si el genoll de davant es mou cap endins, escurça el pas."]},
+ ytw:{n:"Y d'esquena alta",yt:"prone Y raise lower trap",
+  a:{s:[['M 30 108 L 138 104',16],['M 136 101 L 170 84',8],['M 136 106 L 170 98',8]],h:[150,96,9]},
+  c:["De panxa avall, braços endavant en forma de Y, polzes amunt.","Aixeca'ls un pam apretant entre els omòplats, no amb el coll.","Aguanta 2 segons, baixa en 3.","És el múscul que t'aguanta dret a la bici i que l'ordinador adorm."]},
+ toetaps:{n:"Toc de puntes",yt:"pilates toe taps tabletop",
+  a:{s:[['M 44 116 L 100 116',16],['M 100 114 L 112 86',13],['M 112 86 L 146 88',12],['M 100 114 L 128 110',13],['M 128 110 L 148 122',11]],h:[34,114,10]},
+  c:["Estirada, genolls a 90 graus sobre el maluc, canyelles horitzontals.","Baixa un peu a tocar terra amb la punta i torna. Alterna.","La lumbar NO s'aixeca: si ho fa, baixa menys.","Abdomen baix i profund, el que sosté les lumbars."]},
+ cercles:{n:"Cercles de cama",yt:"pilates single leg circles",
+  a:{s:[['M 44 116 L 104 116',16],['M 104 114 L 150 112',13],['M 104 112 L 112 60',13]],h:[34,114,10],d:['M 98 58 A 14 14 0 1 0 126 58 A 14 14 0 1 0 98 58']},
+  c:["Estirada, una cama al cel, l'altra a terra.","Dibuixa cercles petits amb el peu, 5 en cada sentit.","El maluc i la lumbar queden clavats a terra: el cercle el fa la cama, no el cos.","Mobilitat de maluc i control de centre alhora."]},
+ pressinc:{n:"Press inclinat amb pedra",yt:"incline chest press form",
+  a:{o:[['l','M 20 124 L 156 58',6],['e',138,42,15,8]],s:[['M 48 124 L 62 106',12],['M 62 106 L 120 78',16],['M 118 80 L 132 52',9],['M 124 78 L 140 54',8]],h:[136,68,10]},
+  c:["Estirat d'esquena en un talús o pendent d'uns 30 graus, cap amunt.","Pedra al pit amb les dues mans, empeny amunt i una mica endavant.","Baixa en 3 segons fins que la pedra toqui el pit alt.","Aquest angle és el que carrega el pit SUPERIOR. En pla, gairebé no hi arriba."]},
+ reminvsup:{n:"Rem invertit agafada supina",yt:"inverted row underhand grip biceps",
+  a:{o:[['l','M 56 44 L 178 44',9]],s:[['M 34 122 L 76 104 L 112 88',14],['M 112 86 L 120 50',9],['M 106 90 L 114 52',8],['M 34 122 L 23 125',8]],h:[124,80,10],
+     g:{o:[['l','M 56 44 L 178 44',9]],s:[['M 34 122 L 80 110 L 122 102',14],['M 122 100 L 124 50',9],['M 116 102 L 119 52',8],['M 34 122 L 23 125',8]],h:[134,96,10]}},
+  c:["Igual que el rem invertit, però amb els palmells mirant cap a TU.","Aquesta agafada posa el bíceps al centre de la feina.","Tira fins que el pit toqui la branca, colzes enganxats al cos.","Com més horitzontal el cos, més a prop de la dominada."]},
+ escap:{n:"Activació escapular penjat",yt:"scapular pull up",
+  a:{o:[['l','M 24 22 L 176 22',9]],s:[['M 84 26 L 96 58',9],['M 116 26 L 104 58',9],['M 100 60 L 100 100',16],['M 100 100 L 92 124',12],['M 100 100 L 110 124',12]],h:[100,48,9]},
+  c:["Penjat amb braços rectes, deixa que les espatlles pugin a les orelles.","Ara baixa-les i enrere SENSE doblegar els colzes: el cos puja 5 centímetres.","Aguanta 2 segons i torna. 8 repeticions.","El primer moviment d'una dominada. Sense això, tires només amb el braç."]},
+ isohold:{n:"Aguantar a dalt de la branca",yt:"chin up isometric hold top",
+  a:{o:[['l','M 24 30 L 176 30',9]],s:[['M 88 32 L 96 48',9],['M 112 32 L 104 48',9],['M 100 46 L 100 30',8],['M 100 50 L 100 94',16],['M 100 94 L 92 124',12],['M 100 94 L 110 124',12]],h:[100,20,9]},
+  c:["Puja d'un salt o des d'una pedra fins tenir la barbeta per sobre la branca.","Aguanta allà 10 segons. Palmells cap a tu.","Colzes enganxats al cos, omòplats junts i avall.","Construeix la força al punt on la dominada es perd."]},
+ dominada:{n:"Dominada",yt:"chin up proper form",
+  a:{o:[['l','M 24 30 L 176 30',9]],s:[['M 88 32 L 96 48',9],['M 112 32 L 104 48',9],['M 100 46 L 100 30',8],['M 100 50 L 100 94',16],['M 100 94 L 92 124',12],['M 100 94 L 110 124',12]],h:[100,20,9],
+     g:{o:[['l','M 24 30 L 176 30',9]],s:[['M 84 34 L 96 72',9],['M 116 34 L 104 72',9],['M 100 74 L 100 108',16],['M 100 108 L 94 124',10],['M 100 108 L 106 124',10]],h:[100,62,9]}},
+  c:["Palmells cap a tu, mans a l'amplada de les espatlles.","Comença baixant les espatlles, després dobla els colzes. Barbeta per sobre.","Baixa en 3 segons, fins a braços gairebé rectes.","La primera que et surti sencera és el dia que et vull veure celebrar."]},
+ curlmartell:{n:"Curl martell",yt:"hammer curl form",
+  a:{o:[['e',88,64,8,7],['e',112,64,8,7]],s:[['M 92 124 L 92 88',13],['M 108 124 L 108 88',13],['M 100 90 L 100 56',16],['M 88 60 L 86 84',8],['M 112 60 L 114 84',8],['M 86 84 L 90 68',7],['M 114 84 L 110 68',7]],h:[100,44,10]},
+  c:["Una pedra allargada a cada mà, agafada com un martell, polzes amunt.","Puja doblegant només el colze. Baixa en 3 segons.","Treballa el braquial, el múscul de sota el bíceps que dona gruix al braç.","Alterna amb el curl normal: dos angles, més braç."]},
+ kickback:{n:"Puntada enrere a quatre grapes",yt:"quadruped hip extension glute kickback",
+  a:{s:[['M 70 92 L 130 92',15],['M 128 94 L 133 122',9],['M 72 94 L 66 122',11],['M 70 90 L 34 70',12],['M 34 70 L 24 84',9]],h:[150,84,9],
+     g:{s:[['M 70 92 L 130 92',15],['M 128 94 L 133 122',9],['M 72 94 L 66 122',11],['M 70 94 L 40 96',12],['M 40 96 L 38 122',10]],h:[150,84,9]}},
+  c:["A quatre grapes, colzes sota espatlles. Genoll doblegat a 90 graus.","Empeny el taló cap al sostre apretant el gluti. Petit i controlat.","La lumbar NO s'arqueja: si ho fa, puges massa.","Aguanta 1 segon a dalt. Baixa en 2. Notar-ho al gluti, no a l'esquena."]},
+ obertura:{n:"Obertura de pit al talús",yt:"incline dumbbell fly form",
+  a:{o:[['l','M 20 124 L 156 58',6],['e',104,40,10,6],['e',166,64,10,6]],s:[['M 48 124 L 62 106',12],['M 62 106 L 120 78',16],['M 122 78 L 104 48',8],['M 124 76 L 162 70',8]],h:[136,68,10],
+     g:{o:[['l','M 20 124 L 156 58',6],['e',136,38,10,6],['e',142,40,10,6]],s:[['M 48 124 L 62 106',12],['M 62 106 L 120 78',16],['M 120 78 L 134 46',8],['M 124 78 L 140 48',8]],h:[136,68,10]}},
+  c:["Estirada al talús cap amunt, una pedra petita a cada mà.","Obre els braços en creu fins a notar l'estirada al pit. Colzes una mica doblegats.","Tanca com si abracessis un arbre, ajuntant les pedres a dalt.","Poc pes, molt recorregut. Obre el pit i el fa treballar en tot el seu arc."]},
+ exttor:{n:"Extensió toràcica sobre el tronc",yt:"thoracic extension foam roller",
+  a:{o:[['r',84,102,34,24]],s:[['M 40 116 L 100 100',16],['M 100 102 L 128 112',13],['M 128 112 L 134 124',11],['M 44 114 L 30 96',8]],h:[30,116,10]},
+  c:["Estirada amb un tronc rodó sota l'esquena, a l'alçada dels omòplats.","Mans al clatell, deixa caure el cap i el pit enrere per sobre del tronc.","Respira 3 vegades, puja i mou el tronc dos dits amunt.","Obre el que la vida asseguda tanca. El pit puja quan l'esquena s'obre."]},
+ sentcomp:{n:"Sentadilla completa",yt:"bodyweight squat proper form",
+  a:{s:[['M 92 124 L 106 100',13],['M 106 100 L 96 78',14],['M 96 78 L 100 52',16],['M 100 56 L 128 62',8]],h:[100,38,10],
+     g:{s:[['M 96 124 L 97 90',13],['M 97 90 L 100 56',16],['M 100 60 L 98 88',8]],h:[100,42,10]}},
+  c:["Peus a l'amplada de les espatlles, puntes lleugerament obertes.","Baixa enviant el cul enrere, pit alt i esquena recta.","Baixa fins on mantinguis la postura, idealment cuixa paral·lela.","Genoll delicat: queda't a mitja alçada fins que no et molesti al matí."]},
+ escales:{n:"Repeticions d'escales",yt:"stair climbing workout form",
+  a:{o:[['r',108,104,42,22],['r',140,84,44,42],['r',172,64,28,62]],
+     s:[['M 74 124 L 88 102',12],['M 88 102 L 100 84',13],['M 124 104 L 116 88',12],['M 116 88 L 100 84',13],['M 100 84 L 107 54',16],['M 107 58 L 122 70',8]],h:[108,40,10],
+     g:{s:[['M 58 124 L 70 104',12],['M 70 104 L 84 90',13],['M 100 104 L 94 90',12],['M 94 90 L 84 90',13],['M 84 90 L 90 60',16],['M 90 64 L 104 74',8]],h:[91,46,10]}},
+  c:["Escala de casa, de la feina o un tram de pedra a la muntanya.","Puja empenyent amb el peu de dalt, sense estirar-te de la barana.","Baixa caminant i tranquil: la baixada no compta com a sèrie.","És el millor substitut els dies de pluja o quan vas curt de temps."]},
+ wallsit:{n:"Sentadilla isomètrica",yt:"wall sit exercise form",
+  a:{o:[['r',150,22,18,104]],s:[['M 140 80 L 140 50',16],['M 140 82 L 96 84',14],['M 96 84 L 92 124',13],['M 138 54 L 112 68',8]],h:[140,38,10]},
+  c:["Esquena plana contra una paret o una roca, cuixes cap a l'horitzontal.","Genolls just sobre els turmells, mai per davant de la punta del peu.","Aguanta el temps marcat respirant normal.","Molt segura per al genoll i per a l'esquena: no hi ha moviment."]}
+};
+
+const RUN_ELL=[
+ {r:3,w:120,k:120,t:"3 tandes de 2 minuts"},
+ {r:4,w:120,k:120,t:"4 tandes de 2 minuts"},
+ {r:5,w:120,k:120,t:"5 tandes de 2 minuts"},
+ {r:4,w:150,k:120,t:"4 tandes de 2:30"},
+ {r:4,w:180,k:120,t:"4 tandes de 3 minuts"},
+ {r:3,w:300,k:150,t:"3 tandes de 5 minuts"},
+ {r:2,w:480,k:180,t:"2 tandes de 8 minuts"},
+ {r:2,w:600,k:180,t:"2 tandes de 10 minuts"},
+ {r:2,w:720,k:180,t:"2 tandes de 12 minuts"},
+ {r:2,w:900,k:180,t:"2 tandes de 15 minuts"},
+ {r:1,w:1200,k:0,t:"20 minuts seguits",f:"3 km"},
+ {r:1,w:1500,k:0,t:"25 minuts seguits"},
+ {r:1,w:1800,k:0,t:"30 minuts seguits",f:"4 km"},
+ {r:1,w:2100,k:0,t:"35 minuts seguits"},
+ {r:1,w:2400,k:0,t:"40 minuts seguits",f:"5 km"}
+];
+const RUN_ELLA=[
+ {r:6,w:30,k:150,t:"6 tandes de 30 segons"},
+ {r:8,w:30,k:120,t:"8 tandes de 30 segons"},
+ {r:8,w:45,k:120,t:"8 tandes de 45 segons"},
+ {r:6,w:60,k:120,t:"6 tandes d'1 minut"},
+ {r:8,w:60,k:120,t:"8 tandes d'1 minut"},
+ {r:6,w:90,k:120,t:"6 tandes d'1:30"},
+ {r:8,w:90,k:120,t:"8 tandes d'1:30"},
+ {r:6,w:120,k:120,t:"6 tandes de 2 minuts"},
+ {r:5,w:180,k:120,t:"5 tandes de 3 minuts"},
+ {r:4,w:240,k:150,t:"4 tandes de 4 minuts"},
+ {r:3,w:360,k:180,t:"3 tandes de 6 minuts"},
+ {r:2,w:600,k:180,t:"2 tandes de 10 minuts"},
+ {r:2,w:750,k:180,t:"2 tandes de 12:30"},
+ {r:1,w:1200,k:0,t:"20 minuts seguits",f:"2,5 km"},
+ {r:1,w:1500,k:0,t:"25 minuts seguits",f:"3 km"},
+ {r:1,w:1800,k:0,t:"30 minuts seguits"},
+ {r:1,w:2100,k:0,t:"35 minuts seguits",f:"4 km"},
+ {r:1,w:2700,k:0,t:"45 minuts seguits",f:"5 km"}
+];
+
+const P={
+ ell:{name:"Jo",sub:"45a · genoll",acc:"#2F6B4F",run:RUN_ELL,
+  goal:"Massa muscular · perdre panxa · arribar a l'abril en forma",
+  tips:["Camina totes les baixades. La baixada és el que et carrega el genoll dret.","Per guanyar múscul: la pedra ha de pesar prou perquè les 2 últimes repeticions costin. Si en pots fer 15 fàcils, busca'n una de més gran.","Bíceps i pit superior tres cops per setmana entre principal i secundari. La dominada arriba per la suma de negatives, aguantar a dalt i rem supí: no per intentar-la cada dia.","La primera dominada sencera sol arribar entre les 8 i les 14 setmanes. Fins llavors, la mesura de progrés és quants segons aguantes la baixada."],
+  days:[
+   {t:'f',ti:"Cames + bíceps lleuger",su:"Principal cames · secundari braç",ex:[{e:'sentcomp',s:4,r:"10",d:90},{e:'hipthrust',s:4,r:"12",d:90},{e:'sentesp',s:3,r:"12 lentes",d:75},{e:'stepdown',s:3,r:"8 per cama",d:75},{e:'rdl',s:3,r:"12",d:75},{e:'curl',s:2,r:"12",d:45},{e:'equilibri1',s:2,r:"30 seg per cama",d:20}]},
+   {t:'r',ti:"Córrer per muntanya"},
+   {t:'f',ti:"Pit superior + tirada",su:"Principal pit alt i espatlla · secundari bíceps",ex:[{e:'pressinc',s:4,r:"10",d:90},{e:'flexelev',s:4,r:"8 a 12",d:90},{e:'pressp',s:3,r:"10",d:75},{e:'fondos',s:2,r:"10",d:60},{e:'reminvsup',s:3,r:"8",d:75},{e:'ytw',s:2,r:"10",d:30},{e:'planfront',s:3,r:"40 seg",d:45}]},
+   {t:'r',ti:"Córrer per muntanya"},
+   {t:'f',ti:"Camí a la dominada + bíceps",su:"Principal tirada vertical · secundari cames de córrer",ex:[{e:'escap',s:3,r:"8",d:60},{e:'domneg',s:4,r:"3 a 5, baixant en 5 seg",d:120},{e:'isohold',s:3,r:"10 seg",d:90},{e:'reminvsup',s:3,r:"8",d:75},{e:'curl',s:3,r:"12",d:60},{e:'curlmartell',s:3,r:"12",d:60},{e:'gambenrere',s:3,r:"10 per cama",d:60},{e:'tibial',s:3,r:"15",d:30}]},
+   {t:'r',ti:"Tercera sortida",su:"Amb el nen: ell camina i juga, tu fas les tandes"},
+   {t:'d',ti:"Descans",su:"Piscina suau si et ve de gust"}
+  ]},
+ ella:{name:"Ella",sub:"lumbars · pilates",acc:"#9C5F8C",run:RUN_ELLA,
+  goal:"Glutis alts i ferms · pit obert i postura · esquena forta",
+  tips:["Glutis: per aixecar-los de veritat cal una mica de càrrega, no només repeticions. La pedra a l'empenta de maluc és el que marca la diferència en tres mesos.","Pit: el que puja és el múscul de sota i la postura de sobre. Per això hi ha press inclinat, obertures i extensió toràcica: pit treballat i esquena oberta.","Si no has corregut mai: dues setmanes caminant ràpid 30 minuts abans del bloc 1.","Podeu sortir junts a ritmes diferents: qui va davant torna enrere. Seguir el seu ritme és el camí curt a lesionar-te.","Res de càrrega sobre les espatlles ni flexions d'esquena amb pes.","Estil pilates: cada repetició lenta, expirant a l'esforç, melic cap endins."],
+  days:[
+   {t:'f',ti:"Glutis i centre",su:"Matí · el dia de cul",ex:[{e:'resp90',s:1,r:"8 respiracions",d:10},{e:'catcamel',s:2,r:"8",d:20},{e:'hipthrust',s:3,r:"12, pedra lleugera",d:60},{e:'kickback',s:3,r:"12 per costat",d:30},{e:'clam',s:3,r:"12 per costat",d:30},{e:'toetaps',s:3,r:"8 per costat",d:40},{e:'planknees',s:3,r:"25 seg",d:40}]},
+   {t:'r',ti:"Córrer per muntanya"},
+   {t:'f',ti:"Cames, glutis i postura",su:"Matí · to i estabilitat",ex:[{e:'rolldown',s:2,r:"5",d:20},{e:'sentcomp',s:3,r:"12 lentes",d:45},{e:'stepup',s:3,r:"10 per cama",d:45},{e:'sidekick',s:3,r:"12 per costat",d:40},{e:'maleta',s:3,r:"20 passes per mà",d:45},{e:'turmell',s:2,r:"10 per costat",d:15},{e:'mermaid',s:2,r:"5 per costat",d:20}]},
+   {t:'r',ti:"Córrer per muntanya"},
+   {t:'f',ti:"Pit, esquena i glutis",su:"Matí · obrir i aixecar",ex:[{e:'exttor',s:1,r:"3 posicions",d:10},{e:'pressinc',s:3,r:"12, pedra lleugera",d:45},{e:'obertura',s:2,r:"12",d:40},{e:'flexinc',s:3,r:"10",d:45},{e:'ytw',s:2,r:"10",d:30},{e:'bridge',s:3,r:"10 per cama",d:40},{e:'rdl',s:3,r:"12, pedra petita",d:45},{e:'plateral',s:3,r:"25 seg per costat",d:30}]},
+   {t:'r',ti:"Tercera sortida",su:"Amb el nen: ell camina i juga, tu fas les tandes"},
+   {t:'d',ti:"Descans",su:"Estiraments suaus"}
+  ]},
+ nen:{name:"Peque",sub:"6 anys",acc:"#B8860B",run:null,
+  goal:"Guanyar confiança i coordinació jugant · mai competint",
+  tips:["Ha d'encertar la majoria de vegades. Si falla més del que encerta, acosta la diana o baixa el nivell: la coordinació es construeix amb èxits, no amb intents fallits.","Res d'alçada ni de roca vertical. Tot el que proposem té l'aventura d'escalar però amb els peus a terra.","Ell tria el joc i quan es para. Si un dia no vol, es camina i ja està: forçar-lo és el que fa que odiï l'esport.","Celebra l'intent, no el resultat. I deixa que guanyi de tant en tant, però no sempre: que et vegi fallar a tu també l'ajuda.","Mentre feu una tanda de córrer, ell té una missió que dura exactament el mateix. Quan torneu, camineu junts i li toca fer d'animal. Així no s'atura mai ni s'espera assegut.",
+   "El mocador és un mocador de tela, un buff o un mitjó: cau a poc a poc i li dona temps de calcular. Amb una pilota fallaria i s'enfadaria.",
+   "Sessions de 15 o 20 minuts. Millor curt i que en vulgui més."],
+  days:[
+   {t:'d',ti:"Lliure",su:"Jugar i prou"},
+   {t:'j',ti:"Missions de camí",su:"Mentre correu · sempre en moviment",ex:[{e:'pinyacami',s:6,r:"1 llançament llarg"},{e:'obstacles',s:3,r:"1 tram"},{e:'animalari',s:4,r:"1 animal cada cop"},{e:'linia',s:3,r:"1 tram per la vora"}]},
+   {t:'d',ti:"Lliure",su:"Jugar i prou"},
+   {t:'j',ti:"Missions de camí 2",su:"Mentre correu · sempre en moviment",ex:[{e:'futbolpinya',s:4,r:"50 passes"},{e:'lava',s:3,r:"1 recorregut"},{e:'animalari',s:4,r:"1 animal cada cop"},{e:'creuat',s:2,r:"10 per costat"}]},
+   {t:'d',ti:"Lliure",su:"Jugar i prou"},
+   {t:'j',ti:"Aventura en família",su:"Tots tres · ell marca el ritme",ex:[{e:'tresor',s:1,r:"5 objectes"},{e:'grimpar',s:3,r:"1 pujada"},{e:'frog',s:3,r:"8 salts"},{e:'sprint',s:6,r:"15 passes"},{e:'estatues',s:3,r:"1 ronda"}]},
+   {t:'j',ti:"Al jardí de casa",su:"10 minuts · punteria i mans",ex:[{e:'mocador',s:3,r:"10 llançaments"},{e:'bombolles',s:3,r:"1 minut"},{e:'diana',s:3,r:"6 tirs"}]}
+  ]}
+};
+const MIS=[
+ "Troba un tronc més llarg que tu i porta'l 20 passes",
+ "Camina com un ànec fins al proper arbre gros",
+ "Troba 3 pinyes i encerta-les dins d'un cercle de pedres",
+ "Fes de cranc mentre compto fins a 20",
+ "Salta per sobre de 5 arrels sense trepitjar-ne cap",
+ "Fes de serp: arrossega't 10 passes per l'herba",
+ "Troba un pal amb forma de Y i queda-te'l de bastó",
+ "Flamenc: 10 passes a peu coix, i ara amb l'altra cama",
+ "Fes de cangur fins a la propera corba",
+ "Troba la pedra més plana i fes-la lliscar lluny per terra",
+ "Puja aquest pendent a quatre grapes com un ós",
+ "Troba 3 coses vermelles abans que arribi corrent",
+ "Fes de cavall: galopa fins al següent revolt",
+ "Construeix una torre de 5 pedres al mig del camí",
+ "Camina 20 passes per la vora del camí sense sortir-te'n",
+ "Troba el tronc més gruixut que puguis abraçar",
+ "Granota: 8 salts seguits i para",
+ "Camina cap enrere 15 passes sense mirar",
+ "Troba una ploma, una petjada o un forat d'animal",
+ "Fes de gorila picant-te el pit fins a aquell arbre",
+ "Troba dos pals iguals i fes una creu a terra per marcar el camí",
+ "Amaga't darrere un arbre i que no et vegi en 20 segons",
+ "Porta una pedra a cada mà fins al proper revolt",
+ "Troba una fulla més gran que la teva mà"
+];
+let mis=Math.floor(Math.random()*24);
+function newMis(){ mis=(mis+1+Math.floor(Math.random()*5))%MIS.length; const e=document.getElementById('mis'); if(e) e.textContent=MIS[mis]; beep(880,.1); }
+
+// ============ ESCALFAMENT, TORNADA A LA CALMA I MOBILITAT ============
+// Regla d'entrenador: abans, dinàmic (moviment, sense aguantar). Després, estàtic (30 s, sense rebots, tensió còmoda).
+const WU={
+ 'ell-0':["2 min caminant ràpid, acabant amb 20 passes de genolls amunt","10 cercles de maluc per costat, mans a la cintura","10 balancejos de cama endavant i enrere per costat, agafat a un arbre","10 sentadilles sense pes a mig recorregut, lentes","10 pont de glutis, aguantant 1 segon a dalt","Genoll: 10 extensions assegut en una pedra, sense pes, per lubricar l'articulació"],
+ 'ell-2':["2 min caminant ràpid movent els braços","10 cercles d'espatlla endavant, 10 enrere","10 obertures de braços en T, controlades","8 gat-camell","6 flexions inclinades molt fàcils, només per activar","10 rotacions de tronc amb braços creuats al pit"],
+ 'ell-4':["2 min caminant ràpid","10 cercles d'espatlla endavant i enrere","10 retraccions d'omòplats: espatlles enrere i avall, aguanta 2 segons","8 bird-dog per costat","10 segons penjat a la branca, suau, peus a terra","10 rotacions de tronc"],
+ 'ell-r':["10 balancejos de cama endavant i enrere per costat","10 elevacions de talons","10 genolls al pit caminant","10 talons al cul caminant","3 acceleracions suaus de 20 passes, tornant caminant","Passes curtes i ràpides: aterra amb el peu sota el cos, no davant. Menys impacte al genoll que qualsevol sabatilla.","Genoll: comença la primera tanda al ritme més lent possible"],
+ 'ella-f':["2 min caminant ràpid","8 gat-camell lents, respirant","5 desplegaments de peu, vèrtebra a vèrtebra","10 cercles de maluc per costat","10 pont de glutis, costelles avall","10 sentadilles sense pes, poc profundes, expirant en pujar"],
+ 'ella-r':["10 balancejos de cama suaus per costat, agafada a un arbre","10 elevacions de talons","10 genolls al pit caminant","10 cercles de maluc per costat","Lumbars: 5 gat-camell de peu, mans als genolls","Passes curtes, peu sota el cos, tors alt: la lumbar ho agraeix","Primera tanda al ritme més lent que puguis"]
+};
+WU['ell-f']=WU['ell-0']; WU['ella-0']=WU['ella-2']=WU['ella-4']=WU['ella-f'];
+const CD={
+ 'ell-0':["Quàdriceps de peu, taló al cul, 30 s per costat — agafat a un arbre","Flexors de maluc: genoll a terra, maluc endavant, 30 s per costat","Isquiotibials: taló sobre una pedra baixa, pit endavant, 30 s per costat","Glutis: figura 4 assegut, turmell sobre el genoll contrari, 30 s per costat","Bessons: mans a l'arbre, taló a terra, 30 s per costat","Genoll: acaba amb 1 min caminant molt suau, sense aturar-te en sec"],
+ 'ell-2':["Pectoral: avantbraç contra un arbre, gira el cos, 30 s per costat","Tríceps: colze darrere del cap, 30 s per costat","Dorsal: agafat a una branca, cos inclinat enrere, 30 s","Espatlla posterior: braç creuat davant del pit, 30 s per costat","Coll lateral: orella a l'espatlla, 20 s per costat","5 respiracions profundes, espatlles avall"],
+ 'ell-4':["Dorsal: penjat suau amb els peus a terra, 20 s, dues vegades","Bíceps: braç estirat enrere a l'arbre, palma cap enrere, 30 s per costat","Avantbraços: palma contra l'arbre, dits avall, 20 s per costat","Pectoral a l'arbre, 30 s per costat","Postura del nen, 45 s, respirant a l'esquena","Gat-camell, 6 lents"],
+ 'ell-r':["1 min caminant suau: no paris en sec després de l'última tanda","Bessons a l'arbre, 30 s per costat — són els que més pateixen","Isquiotibials: taló sobre una pedra, 30 s per costat","Quàdriceps de peu, 30 s per costat","Flexors de maluc: genoll a terra, 30 s per costat","Glutis: figura 4, 30 s per costat","Genoll: si el notes calent, 10 min de gel a casa, no és dolor"],
+ 'ella-f':["Postura del nen, 45 s, sentint l'esquena obrir-se","Genolls al pit estirada, balancejant suau, 30 s","Piramidal: estirada, turmell sobre el genoll contrari, tira cap a tu, 30 s per costat","Flexors de maluc: genoll a terra, maluc endavant, 30 s per costat","Pectoral a l'arbre, 30 s per costat","5 respiracions profundes estirada, mans a la panxa"],
+ 'ella-r':["1 min caminant suau","Bessons a l'arbre, 30 s per costat","Isquiotibials: taló sobre una pedra, esquena recta, 30 s per costat","Quàdriceps de peu agafada a l'arbre, 30 s per costat","Flexors de maluc, 30 s per costat","Postura del nen, 45 s: acaba sempre aquí per descarregar les lumbars"]
+};
+CD['ell-f']=CD['ell-0']; CD['ella-0']=CD['ella-2']=CD['ella-4']=CD['ella-f'];
+const MOB={
+ ell:["Gat-camell, 10 lents","Mobilitat de turmell a l'arbre, 10 per costat","Cercles de maluc, 10 per costat","90/90 assegut: canvia de costat 10 vegades sense mans","Rotació toràcica a quatre grapes: mà al clatell, obre el colze al cel, 8 per costat","Sentadilla profunda agafat a un arbre, 45 s, deixant el maluc relaxar-se","Penjat a la branca, 20 s, dues vegades","Bessons i flexors de maluc, 30 s per costat","Acaba amb 10 respiracions lentes estirat"],
+ ella:["Gat-camell, 10 lents","Desplegament de peu, 5 vegades","Cercles de maluc, 10 per costat","Rotació toràcica a quatre grapes, 8 per costat","Sirena, 3 respiracions per costat","Genolls al pit estirada, 45 s","Postura del nen, 1 min","Acaba amb 10 respiracions lentes estirada, mans a la panxa"]
+};
+function routineCard(id,title,list,sub){
+  if(!list) return '';
+  const on=openEx===id, ic=id==='warm'?'♨':id==='cool'?'❆':'∞';
+  return `<div class="card ${on?'on':''}"><div class="ctop" onclick="openEx=openEx==='${id}'?null:'${id}';render()">
+    <div class="art" style="font-size:1.5rem;background:none;color:var(--ink2)">${ic}</div>
+    <div class="cinfo"><div class="cname">${title}</div><div class="cset">${sub}</div></div><div class="tick">${on?'−':'+'}</div></div>
+    ${on?`<div class="body"><ul class="cues">${list.map(c=>`<li>${c}</li>`).join('')}</ul>${id==='cool'?`<div class="cnote" style="margin-top:10px;line-height:1.5">Tensió còmoda, mai dolor. Sense rebots. Respira lent: cada expiració deixa anar una mica més.</div>`:id==='warm'?`<div class="cnote" style="margin-top:10px;line-height:1.5">Aquí no s'aguanta res: tot és moviment. Els estiraments estàtics abans d'entrenar treuen força i no prevenen lesions.</div>`:''}</div>`:''}</div>`;
+}
+
+// ============ PROGRESSIÓ PER VARIANTS, PER QUÈ, TEMPO, DESCÀRREGA ============
+const CHAIN={ flexinc:{h:'flexions'}, flexions:{e:'flexinc',h:'flexelev'}, flexelev:{e:'flexions'},
+ planknees:{h:'planfront'}, planfront:{e:'planknees',h:'plan3'}, plan3:{e:'planfront'},
+ sentparc:{h:'sentcomp'}, sentcomp:{e:'sentparc',h:'goblet'}, goblet:{e:'sentcomp',h:'sentuni'}, sentuni:{e:'goblet'},
+ bridge2:{h:'bridge'}, bridge:{e:'bridge2',h:'hipthrust'}, hipthrust:{e:'bridge'},
+ remo:{h:'reminv'}, reminv:{e:'remo',h:'reminvsup'}, reminvsup:{e:'reminv',h:'isohold'}, hang:{h:'escap'}, escap:{e:'hang',h:'isohold'}, isohold:{e:'escap',h:'domneg'}, domneg:{e:'isohold',h:'dominada'}, dominada:{e:'domneg'}, pressinc:{e:'flexelev'}, curl:{h:'curlmartell'}, curlmartell:{e:'curl'},
+ rdl:{h:'rdl1'}, rdl1:{e:'rdl'}, stepup:{h:'stepdown'}, stepdown:{e:'stepup'},
+ farmer:{h:'maleta'}, kickback:{h:'bridge'}, gambenrere:{e:'stepup'}, tibial:{}, toetaps:{e:'deadbug'}, deadbug:{h:'toetaps'}, maleta:{e:'farmer'}, wallsit:{h:'sentesp'}, sentesp:{e:'wallsit'}, pike:{e:'pressp'}, fondos:{e:'flexinc'} };
+const WHY={ flexinc:"Pit i tríceps amb la càrrega justa per aprendre el gest.", flexions:"El bàsic d'empenta: pit, espatlla, tríceps i core alhora.", flexelev:"Més càrrega al pit sense material: el pas després de dominar les normals.",
+ pressp:"Espatlla forta és la que aguanta el manillar tres hores.", fondos:"Tríceps i pit baix: la meitat del volum del braç.", pike:"Espatlla en vertical, el camí cap a exercicis més durs.",
+ planfront:"Core que aguanta la posició de bici i protegeix la lumbar.", planknees:"El mateix que la planxa, amb la càrrega que l'esquena tolera avui.", plan3:"Core que no gira quan el terreny és irregular.", plateral:"El costat de l'abdomen que ningú entrena i tothom necessita.",
+ birddog:"Ensenya lumbar i maluc a treballar coordinats. Fisio pur.", deadbug:"Core profund sense cap càrrega a l'esquena.", catcamel:"Lubrica la columna. El millor inici de matí amb lumbars carregades.", rolldown:"Mobilitat de columna segment a segment.",
+ sentparc:"Quàdriceps i gluti en el rang que el genoll tolera.", sentcomp:"El rei de les cames: quàdriceps, gluti, core i equilibri.", goblet:"La pedra al pit et manté dret: sentadilla amb càrrega i esquena segura.", sentuni:"Força d'una cama, la que fas servir corrent i pedalant.", wallsit:"Quàdriceps sense moviment: to sense risc per a genoll ni esquena.", sentesp:"Carrega el quàdriceps i descarrega la ròtula. Rehabilitació de tendó.",
+ stepup:"Empenta d'una cama, el gest de pedalar.", stepdown:"La baixada lenta enforteix el tendó del genoll. El que més et falta.", escales:"Cames i cor alhora, i és el que faràs a Parpers.", calf:"Bessons forts absorbeixen l'impacte de les baixades.",
+ bridge2:"Glutis: el motor de córrer i el protector de la lumbar.", bridge:"Gluti d'una cama, el que evita que el genoll caigui cap endins.", hipthrust:"El millor exercici de glutis amb pedres: força i massa.", rdl:"Isquios i gluti en cadena. Esquena forta sense carregar-la.", rdl1:"Equilibri, isquios i turmell alhora.",
+ remo:"Esquena mitjana: el que et sosté a la bici i redreça la postura.", reminv:"El millor exercici d'esquena sense material: dorsal, bíceps, core.", domneg:"Construeix la dominada. Força relativa de veritat.", curl:"Bíceps: braç més gros, i ajuda a tota la tirada.", hang:"Descomprimeix la columna i enforteix l'agafada.",
+ farmer:"Core i esquena caminant amb pes, com a la vida real.", maleta:"Estabilitat lateral de la lumbar: protecció caminant i corrent.", clam:"Gluti mitjà: si és feble, el genoll s'enfonsa cap endins.", sidekick:"Gluti mitjà i costat del maluc, la base de la postura.", swim:"Cadena posterior sencera sense càrrega: esquena forta i llarga.", mermaid:"Obre el costat del tronc que la vida asseguda escurça.",
+ kickback:"Gluti aïllat, sense cap càrrega a la lumbar.", obertura:"Pit obert i treballat en tot l'arc, amb poc pes.", exttor:"Obre l'esquena alta: el pit puja quan l'esquena s'obre.", pressinc:"L'únic angle que carrega de veritat el pit superior amb pedres.", reminvsup:"Esquena i bíceps alhora, amb l'agafada que fa servir la dominada.", escap:"El primer moviment de la dominada: sense això tires només amb el braç.", isohold:"Força al punt exacte on la dominada es perd.", dominada:"L'objectiu de tirada. Força relativa de veritat.", curlmartell:"El múscul de sota el bíceps: gruix de braç.", tibial:"El fre de les baixades. Evita la periostitis.", gambenrere:"Patró de gambada amb la canyella vertical: força d'una cama sense castigar el genoll.", ytw:"Esquena alta que t'aguanta dret a la bici i corregeix l'ordinador.", toetaps:"Abdomen profund que sosté la lumbar, sense cap càrrega.", cercles:"Maluc lliure i centre estable: el cor del pilates.", equilibri1:"Turmell i genoll aprenen a corregir sols. Menys torçades.", turmell:"Turmells rígids carreguen genolls, sobretot baixant.", resp90:"Apaga la tensió lumbar i activa el core profund abans d'entrenar." };
+const TEMPO={ ell:"3 s baixant · 1 s pausa · 1 s pujant", ella:"4 s baixant · 4 s pujant · expira a l'esforç" };
+function isDeload(){ const w=weekOfPlan(); return w>1 && w%6===0; }
+function exId(i){ const sw=((S.swap||{})[S.prof]||{})[day]||{}; return sw[i]||P_().days[day].ex[i].e; }
+function swapEx(i,id){ S.swap=S.swap||{}; S.swap[S.prof]=S.swap[S.prof]||{}; S.swap[S.prof][day]=S.swap[S.prof][day]||{}; if(id) S.swap[S.prof][day][i]=id; else delete S.swap[S.prof][day][i]; save(); render(); }
+const DN=["Dilluns","Dimarts","Dimecres","Dijous","Divendres","Dissabte","Diumenge"];
+const DS=["DL","DT","DC","DJ","DV","DS","DG"];
+
+let S={prof:'ell',tab:'avui',block:{ell:1,ella:1,nen:1},blockStart:{},sound:true,warm:true,photos:{},loads:{},levels:{esc:0,cau:0,coord:0},notes:'',start:null,log:{ell:{},ella:{},nen:{}}};
+try{const r=localStorage.getItem('def2'); if(r) S=Object.assign(S,JSON.parse(r));}catch(e){}
+S.blockStart=S.blockStart||{}; S.loads=S.loads||{}; S.levels=S.levels||{esc:0,cau:0,coord:0}; if(!S.start) S.start=new Date().toISOString().slice(0,10);
+['ell','ella','nen'].forEach(k=>{ if(!S.blockStart[k]) S.blockStart[k]=S.start; });
+function save(){try{localStorage.setItem('def2',JSON.stringify(S))}catch(e){}}
+let day=(()=>{let d=new Date().getDay();return d===0?6:d-1;})();
+let openEx=null, rest=null, run=null, wake=null;
+
+const today=()=>new Date().toISOString().slice(0,10);
+function dkey(off){const d=new Date();d.setDate(d.getDate()-off);return d.toISOString().slice(0,10);}
+function L(){ S.log[S.prof]=S.log[S.prof]||{}; return S.log[S.prof]; }
+function entry(k){const l=L(); l[k]=l[k]||{ex:{}}; return l[k];}
+function P_(){return P[S.prof];}
+function plan(){const r=P_().run; return r?r[Math.min(S.block[S.prof],r.length)-1]:null;}
+function mmss(s){const m=Math.floor(s/60),x=s%60;return m+":"+String(x).padStart(2,'0');}
+
+let ac=null;
+function beep(f,d,v){ if(!S.sound)return; try{ ac=ac||new (window.AudioContext||window.webkitAudioContext)(); const o=ac.createOscillator(),g=ac.createGain(); o.connect(g);g.connect(ac.destination); o.frequency.value=f; o.type='sine'; g.gain.setValueAtTime(v||.25,ac.currentTime); g.gain.exponentialRampToValueAtTime(.001,ac.currentTime+d); o.start();o.stop(ac.currentTime+d);}catch(e){} }
+function buzz(p){ try{navigator.vibrate&&navigator.vibrate(p)}catch(e){} }
+async function lock(){ try{ if('wakeLock' in navigator && !wake) wake=await navigator.wakeLock.request('screen'); }catch(e){} }
+function unlock(){ try{ wake&&wake.release(); wake=null; }catch(e){} }
+function toggleSound(){ S.sound=!S.sound; save(); document.getElementById('snd').textContent=S.sound?'So':'Silenci'; }
+function cycleBlock(){ const max=P_().run?P_().run.length:1; S.block[S.prof]=S.block[S.prof]>=max?1:S.block[S.prof]+1; S.blockStart[S.prof]=today(); save(); render(); }
+function setBlock(n){ S.block[S.prof]=n; S.blockStart[S.prof]=today(); save(); render(); }
+function weekOfPlan(){ return Math.floor((new Date()-new Date(S.start))/(864e5*7))+1; }
+function sinceBlock(type){
+  const l=L(), from=S.blockStart[S.prof]||S.start; let n=0,dur=0,facil=0;
+  for(const k in l){ if(k<from||k.length!==10) continue; const e=l[k]; if(!e.ok||e.type!==type) continue; n++; if(e.how==='dur')dur++; if(e.how==='facil')facil++; }
+  return {n,dur,facil};
+}
+function painRecent(){ const l=L(); let p=0; for(let i=0;i<7;i++){ const e=l[dkey(i)]; if(e&&e.morn==='dolor') p++; } return p; }
+function advice(type){
+  const r=sinceBlock(type), max=P_().run?P_().run.length:99, b=S.block[S.prof];
+  if(r.dur>=2) return {k:'warn',t:`Dues sessions dures en aquest bloc. Repeteix el bloc ${b}: no és endarrerir-se, és consolidar.`};
+  if(r.n>=6&&b<max&&r.dur===0) return {k:'ok',t:`${r.n} sessions fetes en aquest bloc sense cap de dura. Estàs preparat per pujar al bloc ${b+1}.`,btn:b+1};
+  if(r.n>=6&&b<max) return {k:'ok',t:`${r.n} sessions en aquest bloc. Si les dues últimes han anat bé, puja al bloc ${b+1}.`,btn:b+1};
+  return {k:'info',t:`${r.n} de 6 sessions d'aquest bloc. Quan hi arribis sense sessions dures ni dolor al matí, et diré de pujar.`};
+}
+function adviceHtml(type){
+  const a=advice(type);
+  return `<div class="${a.k==='warn'?'warn':'tip'}" style="margin-top:12px"><b>${a.k==='ok'?'Progressió':a.k==='warn'?'Frena':'Bloc actual'}</b> · ${a.t}${a.btn?`<div class="acts"><button class="btn pri" onclick="setBlock(${a.btn})">Pujar al bloc ${a.btn}</button></div>`:''}</div>`;
+}
+function postpone(){ S.post=S.post||{}; S.post[S.prof]={day:day,date:today()}; save(); beep(520,.15); render(); }
+function unpost(){ if(S.post) delete S.post[S.prof]; save(); render(); }
+function doPostponed(){ const p=(S.post||{})[S.prof]; if(!p) return; day=p.day; openEx=null; delete S.post[S.prof]; save(); render(); }
+function postBanner(){
+  const p=(S.post||{})[S.prof]; if(!p) return '';
+  let cur=new Date().getDay(); cur=cur===0?6:cur-1;
+  if(p.day===day&&p.date===today()) return `<div class="tip" style="border-left-color:var(--mute)"><b>Sessió posposada</b> · La tens pendent. Demà et sortirà la primera.<div class="acts"><button class="btn" onclick="unpost()">Fer-la avui igualment</button></div></div>`;
+  const d=P_().days[p.day];
+  return `<div class="tip" style="border-left-color:var(--ginesta)"><b>Tens pendent: ${d.ti}</b> · posposada ${p.date===today()?'avui':'de '+p.date.slice(8,10)+'/'+p.date.slice(5,7)}. ${d.t==='f'?'Fes-la ara i deixa la d\'avui per demà, o descarta-la si ja no toca.':'Recupera-la o descarta-la: dues sortides el mateix dia no.'}<div class="acts"><button class="btn pri" onclick="doPostponed()">Fer-la ara</button><button class="btn" onclick="unpost()">Descartar</button></div></div>`;
+}
+function setHow(v){ const en=entry(curKey()); en.how=v; save(); render(); }
+function setMorn(v){ const en=entry(curKey()); en.morn=v; save(); render(); }
+function mornHtml(){
+  if(S.prof==='nen') return '';
+  const en=L()[curKey()]||{}, q=S.prof==='ell'?'el genoll':'les lumbars';
+  const o=[['ok','Bé'],['carregat','Carregat'],['dolor','Dolor']];
+  let h=`<div class="tip" style="border-left-color:var(--mute)"><b>Aquest matí, ${q}?</b><div class="acts" style="margin-top:8px">${o.map(x=>`<button class="btn ${en.morn===x[0]?'pri':''}" onclick="setMorn('${x[0]}')">${x[1]}</button>`).join('')}</div>`;
+  if(en.morn==='dolor') h+=`<div style="margin-top:9px;color:#ffb3a8;font-size:.8rem">Avui millor caminar 30 minuts i fer només mobilitat. Si el dolor segueix més d'una setmana, fisioterapeuta.</div>`;
+  if(en.morn==='carregat') h+=`<div style="margin-top:9px;color:var(--ink2);font-size:.85rem">Fes la sessió però no pugis de bloc ni de pedra avui. Escalfa el doble.</div>`;
+  return h+`</div>`;
+}
+function howHtml(){
+  const en=L()[curKey()]||{}; if(!en.ok) return '';
+  const o=[['facil','Fàcil'],['be','Bé'],['dur','Dur']];
+  return `<div class="tip" style="border-left-color:var(--ok);margin-top:12px"><b>Com ha anat?</b><div class="acts" style="margin-top:8px">${o.map(x=>`<button class="btn ${en.how===x[0]?'pri':''}" onclick="setHow('${x[0]}')">${x[1]}</button>`).join('')}</div></div>`;
+}
+
+function go(t){ S.tab=t; save(); stopRun(); render(); }
+function setProf(p){ S.prof=p; openEx=null; stopRun(); save(); render(); }
+function setDay(i){ day=i; openEx=null; stopRun(); render(); }
+
+function render(){
+  document.documentElement.style.setProperty('--accent',P_().acc);
+  document.getElementById('blk').textContent=S.block[S.prof];
+  document.getElementById('snd').textContent=S.sound?'So':'Silenci';
+  document.getElementById('profiles').innerHTML=Object.keys(P).map(k=>
+    `<button class="prof ${k===S.prof?'on':''}" onclick="setProf('${k}')"><div class="pn">${P[k].name}</div><div class="ps">${P[k].sub}</div></button>`).join('');
+  document.getElementById('goal').textContent=P_().goal;
+  ['avui','familia','setmana','registre','guia'].forEach(t=>document.getElementById('nb-'+t).className='nb'+(S.tab===t?' on':''));
+  const dv=document.getElementById('days');
+  if(S.tab==='avui'){ dv.classList.remove('hide');
+    dv.innerHTML=P_().days.map((d,i)=>{const dn=doneOn(i); return `<button class="day ${i===day?'on':''} ${dn?'ok':''}" onclick="setDay(${i})">${DS[i]}</button>`;}).join('');
+  } else dv.classList.add('hide');
+  const v=document.getElementById('view');
+  if(S.tab==='avui') v.innerHTML=viewDay();
+  else if(S.tab==='familia') v.innerHTML=viewFam();
+  else if(S.tab==='setmana') v.innerHTML=viewWeek();
+  else if(S.tab==='registre') v.innerHTML=viewLog();
+  else v.innerHTML=viewGuide();
+}
+
+function doneOn(i){
+  const now=new Date(); let cur=now.getDay(); cur=cur===0?6:cur-1;
+  const off=cur-i; if(off<0||off>6) return false;
+  const e=L()[dkey(off)]; return !!(e&&e.ok);
+}
+
+const BADGE={f:['','Força'],r:['run','Córrer'],p:['play','Família'],j:['play','Joc'],d:['rest','Descans']};
+
+function viewDay(){
+  const d=P_().days[day], k=(day===((new Date().getDay()||7)-1))?today():'d'+day, en=L()[k]||{ex:{}};
+  let h=`<div class="dh"><div class="badge ${BADGE[d.t][0]}">${BADGE[d.t][1]}</div><div class="dt">${d.ti}</div><div class="ds">${DN[day]}${d.su?' · '+d.su:''}</div></div>`;
+  if(d.t==='r'){ h+=postBanner(); h+=viewRun(); return h; }
+  if(d.t==='d'||d.t==='p'){
+    h+=`<div class="tip">${d.t==='p'?"Sortida llarga tots tres. Camineu 60-90 minuts, sense ritme. Deixa que el nen marqui el ritme i aprofiteu per fer 2 o 3 jocs del seu circuit pel camí.":"Dia sense entrenament. El descans és part del pla: és quan el múscul es construeix. Si vols moure't, caminar o nedar suau."}</div>`;
+    if(d.t==='d'&&S.prof!=='nen') h+=routineCard('mob','Mobilitat de diumenge',MOB[S.prof],'12 minuts · el dia que més rendeix');
+    h+=`<button class="btn pri wide" onclick="markDay()">${en.ok?'Fet ✓':'Marcar com a fet'}</button>`;
+    return h;
+  }
+  if(S.prof==='nen'){
+    h+=`<div class="run kid">
+      <div class="rk">Missió de la gimcana</div>
+      <div id="mis" class="rt" style="font-family:'Instrument Sans';font-size:1.1rem;font-weight:600;line-height:1.4;margin:8px 0 4px">${MIS[mis]}</div>
+      <div class="acts"><button class="btn pri wide" onclick="starMis()">Missió feta ★</button><button class="btn" onclick="newMis()">Una altra</button></div>
+      <div style="margin-top:10px;font-size:.85rem;color:var(--ink2)">★ ${(L()[curKey()]||{}).mis||0} avui, ${totalStars()} en total</div></div>`;
+  }
+  if(S.prof!=='nen'){
+    h+=postBanner();
+    h+=routineCard('warm','Escalfament',WU[S.prof+'-'+day]||WU[S.prof+'-f'],'6 minuts · dinàmic, sempre abans');
+  }
+  h+=`<div class="sect">${S.prof==='nen'?'Jocs':'Exercicis'}</div>`;
+  h+=d.ex.map((x,i)=>card(x,i,en)).join('');
+  const dl=isDeload()&&S.prof!=='nen';
+  const all=d.ex.every((_,i)=>(en.ex[i]||0)>=(dl?Math.max(2,(d.ex[i].s||1)-1):(d.ex[i].s||1)));
+  if(dl) h=h.replace('<div class="sect">',`<div class="tip" style="border-left-color:var(--ok)"><b>Setmana de descàrrega</b> · Cada sisena setmana: una sèrie menys per exercici, mateixa pedra, mateixa tècnica. El cos consolida el que ha guanyat. No és fluixejar, és entrenar bé.</div><div class="sect">`);
+  h+=`<div class="acts"><button class="btn ${all?'pri':''} wide" onclick="markDay()">${en.ok?'Sessió feta ✓':'Marcar sessió feta'}</button>${en.ok||S.prof==='nen'?'':`<button class="btn" onclick="postpone()">Posposar</button>`}</div>`;
+  if(S.prof!=='nen'){ h+=howHtml(); h+=adviceHtml('f'); h+=routineCard('cool','Tornada a la calma',CD[S.prof+'-'+day]||CD[S.prof+'-f'],'6 minuts · estàtic, només després'); }
+  else h+=ladderHtml();
+  h+=`<div class="tip" style="margin-top:16px"><b>Recorda</b> · ${P_().tips[0]}</div>`;
+  return h;
+}
+
+function card(x,i,en){
+  const id=exId(i), ex=EX[id], done=(en.ex[i]||0), dl=isDeload()&&S.prof!=='nen', sets=dl?Math.max(2,(x.s||1)-1):(x.s||1), ok=done>=sets, on=openEx===i;
+  const photo=S.photos[id], swapped=id!==x.e, ch=CHAIN[id]||{}, isHold=/seg|minut|passes|metres|travessa|tram|recorregut|ronda|salts|llan|tirs|objectes|pujada|animal|esglaons/.test(x.r);
+  let h=`<div class="card ${on?'on':''} ${ok?'ok':''}">
+    <div class="ctop" onclick="tog(${i})">
+      <div class="art">${photo?`<img src="${photo}" onerror="this.style.display='none'">`:art(ex.a)}</div>
+      <div class="cinfo"><div class="cname">${ex.n}${swapped?' <span style="color:var(--mute);font-size:.78rem;font-weight:500">variant</span>':''}</div><div class="cset">${sets} × ${x.r}${dl?' <span style="color:var(--mute);font-weight:400">(descàrrega)</span>':''}</div>${x.d?`<div class="cnote">${x.d} seg de descans${S.prof!=='nen'&&!isHold?' · tempo '+TEMPO[S.prof].split(' ·')[0]:''}</div>`:''}</div>
+      <div class="tick ${ok?'ok':''}">${ok?'✓':''}</div>
+    </div>`;
+  if(on){
+    h+=`<div class="body"><div class="artbig">${photo?`<img src="${photo}">`:art(ex.a,1)}</div>`;
+    if(WHY[id]) h+=`<div class="tip" style="margin-bottom:10px;padding:8px 11px"><b>Per què</b> · ${WHY[id]}</div>`;
+    h+=`<ul class="cues">${ex.c.map(c=>`<li>${c}</li>`).join('')}</ul>`;
+    if(S.prof!=='nen'&&!isHold) h+=`<div class="cnote" style="margin-top:9px"><b>Tempo</b> · ${TEMPO[S.prof]}. ${S.prof==='ell'?'Deixa sempre 2 repeticions al dipòsit: l\'última que fas no ha de ser l\'última que podries.':'Si perds el control del ritme, la sèrie s\'ha acabat.'}</div>`;
+    if(ch.e||ch.h||swapped) h+=`<div class="acts" style="margin-top:10px">${ch.e?`<button class="btn" onclick="swapEx(${i},'${ch.e}')">← Més fàcil: ${EX[ch.e].n}</button>`:''}${ch.h?`<button class="btn" onclick="swapEx(${i},'${ch.h}')">Més difícil: ${EX[ch.h].n} →</button>`:''}${swapped?`<button class="btn" onclick="swapEx(${i},null)">Original</button>`:''}</div>`;
+    h+=`<div class="sets">${Array.from({length:sets},(_,s)=>`<div class="dot ${s<done?'ok':''}">${s+1}</div>`).join('')}</div>`;
+    if(rest&&rest.i===i) h+=`<div class="timer"><div class="tlab">Descans</div><div class="tnum" id="rn">${mmss(rest.left)}</div><div class="tbar"><div class="tfill rest" id="rb" style="width:${100-rest.left/rest.tot*100}%"></div></div><button class="btn wide" style="margin-top:10px" onclick="skipRest()">Saltar descans</button></div>`;
+    h+=`<div class="acts">
+      <button class="btn pri" onclick="setDone(${i},${sets},${x.d||30})">Sèrie feta</button>
+      <button class="btn" onclick="resetEx(${i})">Reiniciar</button>
+      <button class="btn" onclick="vid('${ex.yt}')">Veure vídeo</button></div>`;
+    h+=`<input class="url" placeholder="Enganxa aquí l'enllaç d'una foto teva" value="${photo||''}" onchange="setPhoto('${id}',this.value)">`;
+    h+=`</div>`;
+  }
+  return h+`</div>`;
+}
+
+const LAD={
+ esc:{n:"Escalar",l:["Horitzontal: pendent a quatre grapes, passar sota troncs","Alçada d'esglaó: pujar i baixar d'una pedra de 30 cm","Travessar de costat un marge amb els peus a un pam","Amunt de veritat, quan ell ho demani"]},
+ cau:{n:"Caure",l:["Rodar per la pinassa o sobre una manta","Deixar-se caure de genolls des d'ajupit","Saltar avall d'un esglaó de 20 cm, genolls tous","Saltar avall de 40 cm sense soroll"]},
+ coord:{n:"Coordinació",l:["Fer rodar coses per terra entre els dos","Mocador o globus: agafar-lo a l'aire","Pilota gran que bota abans d'arribar-li","Pilota normal, i més endavant corda"]}
+};
+function setLevel(k,v){ S.levels[k]=S.levels[k]===v?v-1:v; save(); render(); }
+function ladderHtml(){
+  let h=`<div class="sect">Escala de confiança</div>`;
+  for(const k in LAD){ const cur=S.levels[k]||0;
+    h+=`<div class="card"><div class="ctop" style="align-items:flex-start"><div class="cinfo"><div class="cname">${LAD[k].n}</div>
+      <div class="sets" style="justify-content:flex-start;margin-top:8px">${LAD[k].l.map((_,i)=>`<div class="dot ${i<cur?'ok':''}" onclick="setLevel('${k}',${i+1})">${i+1}</div>`).join('')}</div>
+      <div class="cnote" style="margin-top:8px;line-height:1.45">${cur<4?'Ara: '+LAD[k].l[cur]:'Completat. Ara només és jugar.'}</div></div></div></div>`;
+  }
+  h+=`<div class="tip">Toca el número quan un nivell li surti sense pensar-hi. Passar al següent només quan ho demani ell.</div>`;
+  return h;
+}
+function starMis(){ const en=entry(curKey()); en.mis=(en.mis||0)+1; save(); beep(1320,.15); buzz([40,40,40]); render(); }
+function totalStars(){ const l=S.log.nen||{}; let n=0; for(const k in l) n+=(l[k].mis||0); return n; }
+function tog(i){ openEx=openEx===i?null:i; render(); }
+function vid(q){ window.open('https://www.youtube.com/results?search_query='+encodeURIComponent(q),'_blank'); }
+function setLoad(e,v){ S.loads[S.prof]=S.loads[S.prof]||{}; if(v.trim()) S.loads[S.prof][e]=v.trim(); else delete S.loads[S.prof][e]; save(); render(); }
+function setPhoto(e,u){ if(u.trim()) S.photos[e]=u.trim(); else delete S.photos[e]; save(); render(); }
+function curKey(){ const now=new Date(); let cur=now.getDay(); cur=cur===0?6:cur-1; return cur===day?today():'d'+day; }
+function setDone(i,sets,d){
+  const en=entry(curKey()); en.ex[i]=Math.min(sets,(en.ex[i]||0)+1); save();
+  beep(880,.12); buzz(40);
+  if(en.ex[i]<sets) startRest(i,d); else { rest=null; }
+  render();
+}
+function resetEx(i){ const en=entry(curKey()); en.ex[i]=0; rest=null; save(); render(); }
+function startRest(i,d){
+  if(rest&&rest.t) clearInterval(rest.t);
+  rest={i:i,left:d,tot:d,t:null}; lock();
+  rest.t=setInterval(()=>{
+    rest.left--;
+    const n=document.getElementById('rn'),b=document.getElementById('rb');
+    if(n) n.textContent=mmss(Math.max(0,rest.left));
+    if(b) b.style.width=(100-rest.left/rest.tot*100)+'%';
+    if(rest.left<=3&&rest.left>0) beep(660,.08,.15);
+    if(rest.left<=0){ clearInterval(rest.t); rest=null; beep(1040,.3); buzz([80,60,80]); unlock(); render(); }
+  },1000);
+}
+function skipRest(){ if(rest&&rest.t)clearInterval(rest.t); rest=null; unlock(); render(); }
+function markDay(){ const en=entry(curKey()); en.ok=!en.ok; en.type=P_().days[day].t; if(en.ok&&S.post&&S.post[S.prof]&&S.post[S.prof].day===day) delete S.post[S.prof]; save(); if(en.ok){beep(1200,.35);buzz([60,50,60,50,120]);} render(); }
+
+function viewRun(){
+  const p=plan(); if(!p) return '<div class="tip">Aquest perfil no té pla de córrer.</div>';
+  const en=L()[curKey()]||{};
+  const tot=Math.round((p.r*p.w+(p.r-1)*p.k)/60);
+  let h=`<div class="run"><div class="rk">Bloc ${S.block[S.prof]} de ${P_().run.length}</div>
+   <div class="rt">${p.t}</div>
+   ${p.f?`<div class="badge" style="margin-top:8px">Fita: ${p.f}</div>`:''}
+   <div class="rplan">
+     <div class="rp"><div class="k">Corres</div><div class="v">${mmss(p.w)}</div></div>
+     <div class="rp"><div class="k">${p.k?'Camines':'Seguits'}</div><div class="v">${p.k?mmss(p.k):'—'}</div></div>
+     <div class="rp"><div class="k">Tandes</div><div class="v">${p.r}</div></div>
+   </div>
+   <div class="rstate">
+     <div class="rphase" id="rph">${run?(run.ph==='w'?'Corrent':run.ph==='e'?'Escalfament':'Caminant'):'A punt'}</div>
+     <div class="rbig ${run?(run.ph==='w'?'run':'walk'):''}" id="rbig">${run?mmss(run.left):mmss(p.w)}</div>
+     <div class="rrounds" id="rrd">${run?(run.ph==='e'?'Camina ràpid 10 minuts':`Tanda ${run.n} de ${p.r}`):(S.warm?'Comença amb 10 minuts d\'escalfament caminant':'Sense escalfament')}</div>
+   </div>
+   <div class="acts">
+     <button class="btn pri wide" onclick="toggleRun()" id="rbtn">${run&&run.t?'Pausa':(run?'Continua':'Comença')}</button>
+     <button class="btn" onclick="stopRun(1)">Reiniciar</button>
+     <button class="btn" onclick="S.warm=!S.warm;save();render()">${S.warm?'Escalf. ON':'Escalf. OFF'}</button>
+   </div></div>`;
+  const km=(p.r*p.w/60/8).toFixed(1);
+  const R=P_().run, last=R.length, i3=R.findIndex(b=>b.f&&b.f.indexOf('3 km')===0)+1, i5=R.findIndex(b=>b.f==='5 km')+1;
+  h+=`<div class="tip"><b>Objectiu</b> · Ara corres uns ${km} km per sessió. Els 3 km seguits són el bloc ${i3} (cap al març) i els 5 km el bloc ${i5} (cap a l'estiu). Amb 3 sortides per setmana i sense saltar-te blocs.</div>`;
+  h+=`<div class="tip"><b>Ritme</b> · Si a la primera tanda no pots dir una frase sencera, vas massa ràpid. Totes les tandes s'han de poder fer igual. Les baixades es caminen sempre.</div>`;
+  h+=`<div class="tip"><b>Si plou o vas curt de temps</b> · Substitueix la sortida per 10 minuts d'escales seguits. No és igual, però manté el fons i no perds el bloc.</div>`;
+  h+=`<div class="tip">${P_().tips[0]}</div>`;
+  h+=routineCard('warm','Activació abans de córrer',WU[S.prof+'-r'],'Després dels 10 minuts caminant');
+  h+=`<div class="acts"><button class="btn ${en.ok?'':'pri'} wide" onclick="markDay()">${en.ok?'Sortida feta ✓':'Marcar sortida feta'}</button>${en.ok?'':`<button class="btn" onclick="postpone()">Posposar</button>`}</div>`;
+  h+=howHtml(); h+=adviceHtml('r');
+  h+=routineCard('cool','Estiraments després de córrer',CD[S.prof+'-r'],'7 minuts · la part que tothom es salta');
+  return h;
+}
+function toggleRun(){
+  const p=plan();
+  if(run&&run.t){ clearInterval(run.t); run.t=null; unlock(); render(); return; }
+  if(!run) run=S.warm?{ph:'e',n:1,left:600,t:null}:{ph:'w',n:1,left:p.w,t:null};
+  lock();
+  run.t=setInterval(()=>{
+    run.left--;
+    if(run.left<=3&&run.left>0) beep(660,.09,.18);
+    if(run.left<=0){
+      if(run.ph==='e'){ run.ph='w'; run.left=p.w; beep(1040,.4); buzz([300]); }
+      else if(run.ph==='w'){
+        if(run.n>=p.r){ clearInterval(run.t); run=null; beep(1200,.5); buzz([100,80,100,80,200]); unlock(); render(); return; }
+        if(!p.k){ run.n++; run.left=p.w; beep(1040,.4); buzz([300]); }
+        else { run.ph='k'; run.left=p.k; beep(440,.4); buzz([200,100,200]); }
+      } else { run.ph='w'; run.n++; run.left=p.w; beep(1040,.4); buzz([300]); }
+    }
+    const b=document.getElementById('rbig'),ph=document.getElementById('rph'),rd=document.getElementById('rrd');
+    if(b){ b.textContent=mmss(Math.max(0,run.left)); b.className='rbig '+(run.ph==='w'?'run':'walk'); }
+    if(ph) ph.textContent=run.ph==='w'?'Corrent':(run.ph==='e'?'Escalfament':'Caminant');
+    if(rd) rd.textContent=run.ph==='e'?'Camina ràpid 10 minuts':`Tanda ${run.n} de ${p.r}`;
+  },1000);
+  render();
+}
+function stopRun(re){ if(run&&run.t)clearInterval(run.t); run=null; unlock(); if(re)render(); }
+
+function jumpTo(k){ S.prof=k; S.tab='avui'; openEx=null; save(); render(); }
+function viewFam(){
+  let cur=new Date().getDay(); cur=cur===0?6:cur-1;
+  let h=`<div class="dh"><div class="dt">Avui a casa</div><div class="ds">${DN[cur]} · toca't per obrir la sessió</div></div>`;
+  h+=Object.keys(P).map(k=>{
+    const d=P[k].days[cur], e=(S.log[k]||{})[today()], ok=!!(e&&e.ok);
+    const pl=P[k].run?P[k].run[Math.min(S.block[k],P[k].run.length)-1]:null;
+    const sub=d.t==='r'&&pl?pl.t:(d.su||'');
+    return `<div class="card ${ok?'ok':''}" onclick="jumpTo('${k}')"><div class="ctop">
+      <div class="art" style="background:${P[k].acc}22;color:${P[k].acc};width:52px;height:52px;font-family:'Barlow Condensed';font-weight:600;font-size:1.5rem;border-radius:50%">${P[k].name[0]}</div>
+      <div class="cinfo"><div class="cname">${P[k].name} · ${d.ti}</div><div class="cnote">${sub}</div></div>
+      <div class="tick ${ok?'ok':''}">${ok?'✓':''}</div></div></div>`;
+  }).join('');
+  h+=`<div class="tip" style="margin-top:12px"><b>Un sol telèfon</b> · Per a la força i els jocs va bé, perquè no coincidiu. El que no es pot fer és cronometrar dues curses alhora: si sortiu junts a córrer, passa-li el fitxer al seu telèfon i cadascú tindrà el seu cronòmetre i el seu registre.</div>`;
+  return h;
+}
+function viewWeek(){
+  let h=`<div class="dh"><div class="dt">La setmana</div><div class="ds">${P_().name} · bloc ${S.block[S.prof]}</div></div>`;
+  h+=P_().days.map((d,i)=>`<div class="card" onclick="S.tab='avui';setDay(${i})"><div class="ctop">
+    <div class="art" style="background:none;font-family:'Barlow Condensed';font-weight:600;font-size:1.3rem;color:var(--mute);width:44px">${DS[i]}</div>
+    <div class="cinfo"><div class="cname">${d.ti}</div><div class="cnote">${d.su||(d.t==='r'&&plan()?plan().t:'')}</div></div>
+    <div class="badge ${BADGE[d.t][0]}" style="margin:0">${BADGE[d.t][1]}</div></div></div>`).join('');
+  h+=`<div class="tip"><b>Com progressar</b> · Cada bloc dura 2 setmanes. Passa al següent només si l'última tanda t'ha sortit igual que la primera i l'endemà al matí no notes res estrany. Canvia el bloc amb el botó de dalt.</div>`;
+  return h;
+}
+
+function viewLog(){
+  const l=L(); let f=0,r=0,p=0,tot=0;
+  for(const k in l){ if(!l[k].ok) continue; tot++; const t=l[k].type; if(t==='f')f++; else if(t==='r')r++; else p++; }
+  let st=0; for(let i=0;i<400;i++){ const e=l[dkey(i)]; if(e&&e.ok) st++; else if(i>0) break; }
+  let dur=0,facil=0,pain=0; for(const k in l){ if(l[k].how==='dur')dur++; if(l[k].how==='facil')facil++; if(l[k].morn==='dolor')pain++; }
+  let h=`<div class="dh"><div class="dt">Registre</div><div class="ds">${P_().name} · setmana ${weekOfPlan()} del pla · bloc ${S.block[S.prof]}</div></div>
+  <div class="stats"><div class="st"><div class="v">${tot}</div><div class="k">sessions</div></div>
+  <div class="st"><div class="v">${st}</div><div class="k">ratxa dies</div></div>
+  <div class="st"><div class="v">${f}</div><div class="k">força</div></div>
+  <div class="st"><div class="v">${r+p}</div><div class="k">muntanya</div></div></div>`;
+  if(S.prof==='nen') h+=`<div class="tip"><b>★ ${totalStars()} missions</b> completades des del principi.</div>`;
+  else if(tot>0) h+=`<div class="tip"><b>Sensacions</b> · ${facil} fàcils, ${tot-facil-dur} bé, ${dur} dures.${dur>facil&&tot>4?' Hi ha més sessions dures que fàcils: el pla va massa de pressa per a tu ara mateix, repeteix bloc.':''}</div>`;
+  h+=`<div class="sect">Últimes 4 setmanes</div><div class="grid">`;
+  h+=DS.map(d=>`<div class="gc" style="background:none;border:none;color:var(--mute)">${d[1]}</div>`).join('');
+  let cur=new Date().getDay(); cur=cur===0?6:cur-1;
+  for(let w=3;w>=0;w--) for(let i=0;i<7;i++){
+    const off=(w*7)+(cur-i); 
+    if(off<0){ h+=`<div class="gc"></div>`; continue; }
+    const e=l[dkey(off)];
+    const cls=e&&e.ok?(e.type==='f'?'f':(e.type==='r'?'r':'p')):'';
+    h+=`<div class="gc ${cls}"></div>`;
+  }
+  h+=`</div><div class="tip" style="margin-top:14px">Verd força, blau córrer, terra família. Marca les sessions el mateix dia: el registre es guarda per data.</div>`;
+  return h;
+}
+
+function viewGuide(){
+  const g=P_();
+  let h=`<div class="dh"><div class="dt">Guia</div><div class="ds">${g.name}</div></div>`;
+  h+=`<div class="sect">Objectiu</div><div class="tip">${g.goal}</div>`;
+  h+=`<div class="sect">Per a tu</div>`+g.tips.map(t=>`<div class="tip">${t}</div>`).join('');
+  if(S.prof!=='nen') h+=`<div class="sect">La panxa</div>
+  <div class="tip">No es pot aprimar per zones: fer abdominals enforteix el múscul de sota, però no crema el greix que hi ha a sobre. El que baixa la panxa és el conjunt: moure's cada dia, menjar bé i dormir. La força i les sortides a la muntanya ja fan la seva feina.</div>`;
+  if(S.prof==='ell') h+=`<div class="sect">El camí a la dominada</div>
+  <div class="tip"><b>1. Activació escapular</b> penjat, fins que els 8 et surtin nets. <b>2. Rem invertit supí</b>, baixant la branca fins a tenir el cos gairebé horitzontal. <b>3. Negatives</b> de 5 segons, i quan en facis 5 seguides de 5 segons, allarga-les a 8. <b>4. Aguantar a dalt</b>, de 10 a 20 segons. Quan aguantis 20 segons i facis negatives de 8, la dominada sencera surt sola.</div>
+  <div class="tip"><b>Pit superior</b> · Dos angles: press inclinat al talús i flexions amb els peus elevats. Tot el que fas en pla treballa el pit mig; el superior només respon a l'angle. Per això he tret les flexions normals del programa: ja les tires bé i no te'l treballaven.</div>`;
+  if(S.prof==='ell') h+=`<div class="sect">Per guanyar múscul</div>
+  <div class="tip"><b>L'estímul.</b> Les dues últimes repeticions de cada sèrie han de costar. Quan una pedra se't queda curta, busca'n una de més gran o fes el moviment més lent.</div>
+  <div class="tip"><b>Proteïna.</b> Al voltant d'1,4 a 1,6 grams per quilo de pes al dia, repartits entre els àpats: ous, llegums, peix, iogurt, carn. Amb menjar normal n'hi ha prou.</div>
+  <div class="tip"><b>Descans.</b> El múscul es construeix dormint, no entrenant. I el tabac hi rema en contra: redueix la recuperació i la síntesi de proteïna.</div>`;
+  if(S.prof==='ella') h+=`<div class="sect">Pit i glutis, la veritat</div>
+  <div class="tip"><b>El pit.</b> El teixit del pit no és múscul i cap exercici el fa pujar directament. El que sí canvia és el que hi ha a sota i al darrere: un pectoral treballat que li fa de base, i una esquena alta oberta que fa que el pit miri endavant en comptes d'avall. Per això el divendres comença obrint l'esquena sobre el tronc i segueix amb press inclinat i obertures.</div>
+  <div class="tip"><b>Els glutis.</b> Aquí sí que és múscul i sí que puja. Però per aixecar-lo cal càrrega progressiva, no només repeticions: una pedra a l'empenta de maluc que costi a les dues últimes, i anar-la fent més grossa. Els kickbacks, els clams i les elevacions laterals donen la forma; l'empenta amb pedra dona el volum.</div>
+  <div class="sect">Estil pilates</div>
+  <div class="tip"><b>Control abans que pes.</b> Cada repetició lenta i conscient. Si has de fer força amb el coll o arquejar l'esquena per acabar la sèrie, para: aquesta repetició no compta.</div>
+  <div class="tip"><b>Respiració.</b> Expira sempre a l'esforç, amb el melic cap endins i les costelles tancades. És el que activa el centre i protegeix les lumbars.</div>
+  <div class="tip"><b>To sense volum.</b> Amb repeticions altes i poc pes es guanya densitat i fermesa, no mida. Els resultats es veuen abans a la postura que a la bàscula.</div>`;
+  if(S.prof!=='nen'){
+    const m=new Date().getMonth(), ph=[[8,"Setembre · octubre","Fer-se amic de l'hàbit: tècnica sense pes, tandes curtes, res de pressa."],[10,"Novembre · desembre","Allargar: pedra més grossa, sortida llarga el cap de setmana, primer Parpers per asfalt."],[0,"Gener · febrer","Terreny real: el trajecte a la feina en e-bike un dissabte, primer només l'anada."],[2,"Març","Assaig general: un dia entre setmana amb despertador, dutxa a la feina i tot."],[3,"Abril 2027","Dos dies a la feina en bici, mai seguits. I els 3 km corrent de camí."]];
+    h+=`<div class="sect">El camí fins a l'abril</div>`+ph.map((x,i)=>{const on=(i<4&&m>=x[0]&&m<(ph[i+1]?ph[i+1][0]===0?12:ph[i+1][0]:12))||(i===4&&m===3); return `<div class="tip" ${on?'':'style="opacity:.6;border-left-color:var(--mute)"'}><b>${x[1]}</b> · ${x[2]}</div>`;}).join('');
+  }
+  if(S.prof!=='nen') h+=`<div class="sect">Escalfar i estirar</div>
+  <div class="tip"><b>Abans: dinàmic.</b> Moviment, sang als músculs, articulacions lubricades. Sis minuts fan la diferència entre una sessió que et surt i una que et fa mal. Mai estiraments aguantant abans d'entrenar: treuen força i no prevenen res.</div>
+  <div class="tip"><b>Després: estàtic.</b> 30 segons per posició, tensió còmoda, sense rebots, respirant. No és el que et fa més flexible a curt termini; és el que fa que demà puguis tornar a entrenar.</div>
+  <div class="tip"><b>Els primers minuts després de córrer</b> no paris en sec: camina un minut. El cor i les cames baixen de revolucions junts i ${S.prof==='ell'?'el genoll no es queda fred de cop.':'les lumbars no es carreguen.'}</div>
+  <div class="tip"><b>El diumenge</b> és el dia de mobilitat, 12 minuts. Sembla poca cosa i és el que fa que els altres sis dies no s'acumulin.</div>`;
+  if(S.prof!=='nen') h+=`<div class="sect">Com progressar sense gimnàs</div>
+  <div class="tip"><b>Tempo abans que pes.</b> ${S.prof==='ell'?'Tres segons baixant fan que una pedra de 8 kg treballi com una de 12. I deixa sempre dues repeticions al dipòsit: la fatiga extrema no construeix més múscul, només et roba la sessió següent.':'Quatre segons baixant i quatre pujant: el múscul treballa el doble sense afegir un gram de pes ni un gram de risc per a l\'esquena.'}</div>
+  <div class="tip"><b>Variants, no només pedres.</b> Cada exercici té un esglaó més fàcil i un més difícil, a la seva fitxa. Quan una sèrie et surt fàcil dues sessions seguides, puja de variant. Si un dia no arribes, baixa'n sense complexos.</div>
+  <div class="tip"><b>Descàrrega cada sis setmanes.</b> L'app la marca sola: una sèrie menys de tot. És quan el cos consolida. Saltar-se-la és la manera més ràpida d'estancar-se o lesionar-se.</div>
+  <div class="tip"><b>Per què cada exercici.</b> A cada fitxa hi tens una línia que diu què fa per a tu. Si no saps per què fas una cosa, la fas malament o la deixes de fer.</div>`;
+  h+=`<div class="sect">Com funciona</div>
+  <div class="tip"><b>Blocs de 2 setmanes.</b> Cada bloc allarga una mica el que corres o afegeix una tanda. Puja de bloc amb el botó de dalt només quan el bloc actual et surti còmode dues vegades.</div>
+  <div class="tip"><b>Dels 3 als 5 km.</b> Un cop corris 20 minuts seguits, la resta és allargar 5 minuts cada dos blocs. Aquí és on la majoria es lesiona per pujar massa de pressa: si una setmana et costa, repeteix el bloc en comptes de passar al següent. No hi ha cap presa.</div>
+  <div class="tip"><b>Tres sortides per setmana.</b> És el que més accelera arribar als 3 km: amb dues es triga uns 6 mesos, amb tres uns 4. Corre en pla o pujada suau i camina totes les baixades.</div>
+  <div class="tip"><b>Força i córrer alternats.</b> Mai força de cames el dia abans de córrer. El dia de descans és obligatori, no opcional.</div>
+  <div class="tip"><b>Un telèfon o dos.</b> Cada telèfon guarda el seu propi registre. Amb un de sol pots gestionar-ho tot menys dues curses simultànies: per això, el més pràctic és que ella tingui el fitxer al seu mòbil i tu al teu, i el del nen el porti qui vagi amb ell.</div>
+  <div class="tip"><b>Material.</b> Pedres de mida còmoda, un tronc caigut més baix que el genoll i una branca gruixuda per penjar-se. Pesa les pedres un cop i apunta-ho, o no sabràs si progresses.</div>`;
+  if(S.prof==='nen') h+=`<div class="sect">Coordinació ull-mà</div>
+  <div class="tip"><b>Objectes lents.</b> Una pilota va massa ràpida per a qui li costa calcular. Un mocador, un globus o una bombolla cauen a poc a poc i donen temps de reaccionar: així encerta, i encertant agafa confiança. Quan domini el mocador, ja passareu a la pilota.</div>
+  <div class="tip"><b>Rodar abans que llançar.</b> Fer rodar coses per terra entre vosaltres és molt més fàcil que llançar-les per l'aire, i treballa igual la punteria.</div>
+  <div class="tip"><b>Els dos costats.</b> El joc de tocar el genoll contrari sembla una tonteria i és dels millors que hi ha: fa treballar junts els dos costats del cos, que és el que sol fallar.</div>
+  <div class="sect">La por</div>
+  <div class="tip">La por a l'esport ve gairebé sempre de sentir-se el pitjor davant d'altres. Per això aquí no hi ha cronòmetre, ni comptar punts, ni comparar-lo amb ningú. Guanya confiança fent coses que li surten.</div>
+  <div class="tip">Per l'escalada, el pendent a quatre grapes li dona la mateixa sensació d'aventura sense alçada. No l'obliguis a pujar res que li faci por: cada vegada que ho superi ell sol valdrà per deu vegades forçat.</div>
+  <div class="warn">Si la dificultat de coordinació és notable en el dia a dia (cordar-se, retallar, vestir-se, xocar amb les coses), val la pena comentar-ho amb el pediatre. Hi ha teràpia de psicomotricitat que va molt bé i com abans es comença, millor.</div>`;
+  h+=`<div class="sect">Quan parar</div>
+  <div class="warn">Dolor que et fa canviar la manera de caminar o córrer, inflor a una articulació, o molèstia que segueix igual al matí durant més d'una setmana: para i consulta un fisioterapeuta.</div>
+  <div class="warn">Dolor o opressió al pit, mareig, o quedar-te sense aire de manera desproporcionada: atura't immediatament i consulta un metge. Als 45 i tornant a l'esport, una revisió amb prova d'esforç abans de començar és la inversió més sensata.</div>`;
+  h+=`<div class="sect">Dades</div>
+  <div class="tip">El registre viu en aquest telèfon. Fes una còpia de tant en tant, i sobretot abans de canviar de mòbil o de navegador.</div>
+  <div class="acts"><button class="btn pri" onclick="exportData()">Descarregar còpia</button><button class="btn" onclick="importData()">Restaurar còpia</button><button class="btn" onclick="if(confirm('Esborrar tot el registre d\\'aquest perfil?')){S.log[S.prof]={};save();render();}">Esborrar registre</button></div>`;
+  return h;
+}
+
+function exportData(){
+  const blob=new Blob([JSON.stringify(S)],{type:'application/json'}), a=document.createElement('a');
+  a.href=URL.createObjectURL(blob); a.download='define-'+today()+'.json'; document.body.appendChild(a); a.click(); a.remove();
+}
+function importData(){
+  const inp=document.createElement('input'); inp.type='file'; inp.accept='.json,application/json';
+  inp.onchange=()=>{ const f=inp.files[0]; if(!f) return; const r=new FileReader();
+    r.onload=()=>{ try{ const d=JSON.parse(r.result); if(!d.log) throw 0; if(confirm('Substituir les dades actuals per la còpia?')){ S=Object.assign(S,d); save(); render(); } }catch(e){ alert('El fitxer no és una còpia vàlida.'); } };
+    r.readAsText(f); };
+  inp.click();
+}
+render();
+</script>
+</body>
+</html>
